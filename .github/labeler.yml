@@ -1,0 +1,20 @@
+enhancement:
+  - head-branch:
+      - "^feat(?:/|$)"
+
+bug:
+  - head-branch:
+      - "^fix(?:/|$)"
+
+documentation:
+  - any:
+      - head-branch:
+          - "^docs(?:/|$)"
+      - changed-files:
+          - any-glob-to-any-file:
+              - "*.md"
+              - "**/*.md"
+
+accessibility:
+  - head-branch:
+      - "^a11y(?:/|$)"

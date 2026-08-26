@@ -1,0 +1,72 @@
+name: Web CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  quality:
+    name: Lint, typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Check formatting
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          mapfile -d '' files < <(
+            git -C .. diff --name-only -z --diff-filter=ACMR \
+              "$BASE_SHA" "$HEAD_SHA" -- \
+              'web/**/*.ts' 'web/**/*.tsx' 'web/*.ts' 'web/*.tsx'
+          )
+
+          for index in "${!files[@]}"; do
+            files[$index]="${files[$index]#web/}"
+          done
+
+          if (( ${#files[@]} > 0 )); then
+            npx --no-install prettier --check "${files[@]}"
+          else
+            echo "No changed TypeScript files to check."
+          fi
+
+      - name: Build
+        run: npm run build
