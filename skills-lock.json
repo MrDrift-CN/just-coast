@@ -90,6 +90,12 @@
       "sourceType": "github",
       "skillPath": "assistant-ui/skills/update/SKILL.md",
       "computedHash": "d5f27502fb5fe285a821d70b871c2f65b54629b3c88a4295dfe27dc3535d20ef"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "6b526d013e28073246a36f99b529bc43745d30832ecfa8217b359c34f260ca6b"
     }
   }
 }

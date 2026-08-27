@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "Just Coast"
+  },
+  "actions": {
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存"
+  },
+  "language": {
+    "label": "语言",
+    "system": "跟随系统",
+    "options": {
+      "enUS": "English",
+      "zhCN": "简体中文"
+    }
+  }
+}

@@ -62,6 +62,30 @@ export default defineConfig([
     },
   },
   {
+    files: ["src/**/*.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["./*", "./**", "../*", "../**"],
+              message:
+                "web/src 内部模块与样式必须通过 @/ 别名导入，禁止使用相对路径。",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["src/**/*.{ts,tsx}"],
     ignores: [
       "src/components/assistant-ui/**/*.{ts,tsx}",

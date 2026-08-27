@@ -22,6 +22,14 @@ export interface ThemeChartPalette {
   chart5: string
 }
 
+/** 应用装饰性背景使用的渐变语义颜色。 */
+export interface ThemeGradientPalette {
+  start: string
+  middle: string
+  end: string
+  glow: string
+}
+
 /** 侧边栏专用语义颜色。 */
 export interface ThemeSidebarPalette {
   background: string
@@ -61,6 +69,7 @@ export interface ThemePalette {
   border: string
   input: string
   ring: string
+  gradient: ThemeGradientPalette
   charts: ThemeChartPalette
   sidebar: ThemeSidebarPalette
 }
@@ -107,10 +116,12 @@ export interface ThemeConfig {
 }
 
 export type ThemeChartPalettePatch = Partial<ThemeChartPalette>
+export type ThemeGradientPalettePatch = Partial<ThemeGradientPalette>
 export type ThemeSidebarPalettePatch = Partial<ThemeSidebarPalette>
 export type ThemePalettePatch = Partial<
-  Omit<ThemePalette, "charts" | "sidebar">
+  Omit<ThemePalette, "gradient" | "charts" | "sidebar">
 > & {
+  gradient?: ThemeGradientPalettePatch
   charts?: ThemeChartPalettePatch
   sidebar?: ThemeSidebarPalettePatch
 }

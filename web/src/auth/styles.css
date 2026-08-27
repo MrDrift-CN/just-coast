@@ -1,0 +1,147 @@
+/**
+ * Authentication surfaces.
+ *
+ * The liquid-glass composition consumes the global theme gradient tokens. Theme
+ * changes therefore update the background without coupling authentication pages
+ * to a fixed brand palette.
+ */
+
+.auth-shell {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  height: 100svh;
+  min-height: 0;
+  place-items: start center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: var(--background);
+  scrollbar-width: none;
+}
+
+.auth-shell::-webkit-scrollbar {
+  display: none;
+}
+
+.auth-actions {
+  position: fixed;
+  inset-block-start: clamp(1rem, 2vw, 1.5rem);
+  inset-inline-end: clamp(1rem, 2vw, 1.5rem);
+}
+
+.auth-shell::before {
+  position: fixed;
+  z-index: -2;
+  inset: 0;
+  content: "";
+  background:
+    radial-gradient(
+      circle at 18% 82%,
+      color-mix(in oklch, var(--gradient-start) 40%, var(--primary)) 0 11%,
+      transparent 39%
+    ),
+    radial-gradient(
+      circle at 78% 24%,
+      color-mix(in oklch, var(--gradient-middle) 52%, var(--accent)) 0 13%,
+      transparent 44%
+    ),
+    radial-gradient(
+      circle at 62% 92%,
+      color-mix(in oklch, var(--gradient-end) 48%, var(--primary)) 0 12%,
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--background) 84%, var(--gradient-start)),
+      color-mix(in oklch, var(--background) 82%, var(--gradient-middle)),
+      color-mix(in oklch, var(--background) 86%, var(--gradient-end))
+    );
+  filter: blur(48px) saturate(128%);
+}
+
+.auth-shell::after {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(in oklch, var(--background) 42%, transparent),
+      transparent 42% 62%,
+      color-mix(in oklch, var(--gradient-glow) 34%, transparent)
+    ),
+    color-mix(in oklch, var(--background) 18%, transparent);
+}
+
+.auth-card {
+  --card-spacing: 1.5rem;
+
+  width: min(100%, 32rem);
+  margin-block: auto;
+  border-color: color-mix(in oklch, var(--border) 54%, transparent);
+  background: color-mix(in oklch, var(--card) 64%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in oklch, var(--background) 76%, transparent) inset,
+    0 28px 80px color-mix(in oklch, var(--gradient-glow) 24%, transparent),
+    0 20px 54px color-mix(in oklch, var(--foreground) 12%, transparent);
+  backdrop-filter: blur(26px) saturate(135%);
+}
+
+.auth-input,
+.auth-input-group,
+.auth-provider-button {
+  background: color-mix(in oklch, var(--background) 52%, transparent);
+  box-shadow: 0 1px 0 color-mix(in oklch, var(--background) 64%, transparent)
+    inset;
+}
+
+.auth-input,
+.auth-input-group,
+.auth-submit-button,
+.auth-provider-button {
+  min-height: 2.5rem;
+}
+
+.auth-input {
+  padding-inline: 1rem;
+}
+
+.auth-provider-button:hover {
+  background: color-mix(in oklch, var(--accent) 62%, transparent);
+}
+
+.auth-card [data-slot="card-footer"] {
+  border-top: 0;
+  background: transparent;
+  padding-top: 0;
+}
+
+.auth-card [data-slot="field-group"] {
+  gap: 1rem;
+}
+
+@media (max-width: 40rem) {
+  .auth-shell {
+    place-items: stretch;
+    padding: 0;
+  }
+
+  .auth-card {
+    --card-spacing: 1.25rem;
+
+    min-height: 100svh;
+    width: 100%;
+    justify-content: center;
+    border: 0;
+    border-radius: 0;
+    background: color-mix(in oklch, var(--card) 76%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-shell::before {
+    filter: blur(36px);
+  }
+}

@@ -5,7 +5,7 @@ import {
   normalizeThemeConfig,
   parseThemeConfig,
   serializeThemeConfig,
-} from "./config"
+} from "@/theme/config"
 import type {
   MotionPreference,
   ResolvedMotionPreference,
@@ -13,7 +13,7 @@ import type {
   ThemeConfig,
   ThemeMode,
   ThemePalette,
-} from "./types"
+} from "@/theme/types"
 
 /** 系统深色模式媒体查询。 */
 export const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
@@ -21,7 +21,10 @@ export const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
 /** 系统减少动效媒体查询。 */
 export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)"
 
-type MainPaletteKey = keyof Omit<ThemePalette, "charts" | "sidebar">
+type MainPaletteKey = keyof Omit<
+  ThemePalette,
+  "gradient" | "charts" | "sidebar"
+>
 
 const PALETTE_PROPERTIES = [
   ["--background", "background"],
@@ -54,6 +57,16 @@ const CHART_PROPERTIES = [
 ] as const satisfies readonly (readonly [
   string,
   keyof ThemePalette["charts"],
+])[]
+
+const GRADIENT_PROPERTIES = [
+  ["--gradient-start", "start"],
+  ["--gradient-middle", "middle"],
+  ["--gradient-end", "end"],
+  ["--gradient-glow", "glow"],
+] as const satisfies readonly (readonly [
+  string,
+  keyof ThemePalette["gradient"],
 ])[]
 
 const SIDEBAR_PROPERTIES = [
@@ -111,6 +124,16 @@ function applyPalette(
       "color",
       palette.charts[key],
       fallback.charts[key]
+    )
+  }
+
+  for (const [property, key] of GRADIENT_PROPERTIES) {
+    setSupportedProperty(
+      root,
+      property,
+      "color",
+      palette.gradient[key],
+      fallback.gradient[key]
     )
   }
 

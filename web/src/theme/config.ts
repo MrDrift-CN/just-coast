@@ -3,10 +3,11 @@ import type {
   MotionPreference,
   ThemeConfig,
   ThemeConfigPatch,
+  ThemeGradientPalette,
   ThemeMode,
   ThemePalette,
   ThemePalettePatch,
-} from "./types"
+} from "@/theme/types"
 
 /** 主题配置的本地存储键。 */
 export const THEME_STORAGE_KEY = "just-coast.theme"
@@ -16,6 +17,12 @@ const PRIMARY_FOREGROUND = "oklch(0.18 0.035 150)"
 const DEFAULT_BODY_FONT = "'Geist Variable', sans-serif"
 const DEFAULT_MONO_FONT =
   "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+const DEFAULT_GRADIENT = {
+  start: "color-mix(in oklab, var(--background) 88%, var(--primary))",
+  middle: "color-mix(in oklab, var(--background) 90%, var(--accent))",
+  end: "color-mix(in oklab, var(--background) 84%, var(--secondary))",
+  glow: "color-mix(in oklab, var(--primary) 62%, transparent)",
+} as const satisfies ThemeGradientPalette
 
 /**
  * 应用的默认主题配置。
@@ -46,6 +53,7 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
       border: "oklch(0.922 0 0)",
       input: "oklch(0.922 0 0)",
       ring: LIGHT_PRIMARY,
+      gradient: { ...DEFAULT_GRADIENT },
       charts: {
         chart1: "oklch(0.87 0 0)",
         chart2: "oklch(0.556 0 0)",
@@ -84,6 +92,7 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
       border: "oklch(1 0 0 / 10%)",
       input: "oklch(1 0 0 / 15%)",
       ring: LIGHT_PRIMARY,
+      gradient: { ...DEFAULT_GRADIENT },
       charts: {
         chart1: "oklch(0.87 0 0)",
         chart2: "oklch(0.556 0 0)",
@@ -149,6 +158,7 @@ const PALETTE_KEYS = [
   "ring",
 ] as const
 const CHART_KEYS = ["chart1", "chart2", "chart3", "chart4", "chart5"] as const
+const GRADIENT_KEYS = ["start", "middle", "end", "glow"] as const
 const SIDEBAR_KEYS = [
   "background",
   "foreground",
@@ -217,6 +227,11 @@ function normalizePalette(
   const source = isRecord(value) ? value : {}
   return {
     ...normalizeCssValues(value, fallback, PALETTE_KEYS),
+    gradient: normalizeCssValues(
+      source.gradient,
+      fallback.gradient,
+      GRADIENT_KEYS
+    ),
     charts: normalizeCssValues(source.charts, fallback.charts, CHART_KEYS),
     sidebar: normalizeCssValues(source.sidebar, fallback.sidebar, SIDEBAR_KEYS),
   }
@@ -225,6 +240,7 @@ function normalizePalette(
 function clonePalette(palette: ThemePalette): ThemePalette {
   return {
     ...palette,
+    gradient: { ...palette.gradient },
     charts: { ...palette.charts },
     sidebar: { ...palette.sidebar },
   }
@@ -237,6 +253,10 @@ function mergePalette(
   return {
     ...current,
     ...patch,
+    gradient: {
+      ...current.gradient,
+      ...patch?.gradient,
+    },
     charts: {
       ...current.charts,
       ...patch?.charts,

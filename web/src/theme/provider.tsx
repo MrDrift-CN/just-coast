@@ -9,7 +9,7 @@ import {
   normalizeThemeConfig,
   parseThemeConfig,
   serializeThemeConfig,
-} from "./config"
+} from "@/theme/config"
 import {
   COLOR_SCHEME_QUERY,
   REDUCED_MOTION_QUERY,
@@ -19,14 +19,14 @@ import {
   resolveMotionPreference,
   resolveThemeMode,
   saveThemeConfig,
-} from "./runtime"
+} from "@/theme/runtime"
 import type {
   ResolvedMotionPreference,
   ResolvedThemeMode,
   ThemeConfig,
   ThemeConfigPatch,
   ThemeMode,
-} from "./types"
+} from "@/theme/types"
 
 /**
  * 主题上下文向应用公开的能力。

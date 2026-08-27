@@ -15,6 +15,7 @@
 
 - 系统、浅色、深色主题，浅色与深色配置彼此独立。
 - 完整的 shadcn 表面和交互语义色：背景、前景、卡片、弹层、主色、次色、弱化色、强调色、危险色、边框、输入框和焦点环。
+- 可按浅色和深色分别配置的渐变起点、中点、终点和光晕色；默认跟随背景与主色等语义色变化。
 - 五个图表色，以及独立的侧边栏背景、前景、主色、强调色、边框和焦点环。
 - 正文字体、标题字体、等宽字体、全局字号和正文字重。
 - shadcn 基础圆角，以及从基础值派生的全部圆角等级。
@@ -29,6 +30,7 @@
 以下能力适合放入未来的个性化页面，并通过 `useTheme()` 即时应用：
 
 - 主题模式、语义颜色、图表颜色、侧栏颜色。
+- 渐变起点、中点、终点和光晕色。
 - 正文/标题/等宽字体、字号、字重。
 - 圆角、动效、对比度和其他界面偏好。
 
@@ -55,6 +57,9 @@ export function Example() {
     palettes: {
       light: {
         primary: "#00c853",
+        gradient: {
+          glow: "color-mix(in oklab, #00c853 62%, transparent)",
+        },
         charts: {
           chart1: "#00c853",
         },
@@ -85,7 +90,7 @@ export function Example() {
 ## 开发约束
 
 1. 业务组件只使用 shadcn/Tailwind 语义类，例如 `bg-primary`、`text-foreground`、`border-border`、`font-heading`，禁止写死品牌色或直接读取主题对象。
-2. 图表使用 `var(--color-chart-1)` 至 `var(--color-chart-5)`；侧栏使用 `sidebar-*` 语义类。
+2. 图表使用 `var(--color-chart-1)` 至 `var(--color-chart-5)`；侧栏使用 `sidebar-*` 语义类；装饰背景使用 `gradient-*` 语义色或 `--gradient-*` 变量。
 3. 主题只能通过 `useTheme()` 修改。页面或组件不得直接操作根元素、主题 `localStorage` 或 `.dark`。
 4. 新增全局个性化字段时，依次更新 `types.ts`、`config.ts`、`runtime.ts`；如影响 Tailwind 映射，再更新 `styles.css`。
 5. 修改配置结构时同步更新默认值和规范化逻辑。浅色和深色值必须成对维护并检查可读性。

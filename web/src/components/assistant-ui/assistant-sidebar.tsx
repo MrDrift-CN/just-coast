@@ -2,10 +2,10 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import type { FC, PropsWithChildren } from "react";
+} from "@/components/ui/resizable"
+import type { FC, PropsWithChildren } from "react"
 
-import { Thread } from "@/components/assistant-ui/thread";
+import { Thread } from "@/components/assistant-ui/thread"
 
 export const AssistantSidebar: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -16,5 +16,5 @@ export const AssistantSidebar: FC<PropsWithChildren> = ({ children }) => {
         <Thread />
       </ResizablePanel>
     </ResizablePanelGroup>
-  );
-};
+  )
+}

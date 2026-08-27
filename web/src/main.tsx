@@ -1,10 +1,11 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
+import "@/i18n"
 import "katex/dist/katex.min.css"
 import "streamdown/styles.css"
-import "./index.css"
-import App from "./App.tsx"
+import "@/index.css"
+import App from "@/App"
 import { MarkdownRequestProvider } from "@/components/assistant-ui/streamdown-text"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { initializeTheme, ThemeProvider } from "@/theme"

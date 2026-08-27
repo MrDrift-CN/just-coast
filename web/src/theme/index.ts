@@ -6,13 +6,13 @@ export {
   normalizeThemeConfig,
   parseThemeConfig,
   serializeThemeConfig,
-} from "./config"
+} from "@/theme/config"
 export {
   ThemeProvider,
   useTheme,
   type ThemeContextValue,
   type ThemeProviderProps,
-} from "./provider"
+} from "@/theme/provider"
 export {
   COLOR_SCHEME_QUERY,
   REDUCED_MOTION_QUERY,
@@ -23,7 +23,7 @@ export {
   resolveMotionPreference,
   resolveThemeMode,
   saveThemeConfig,
-} from "./runtime"
+} from "@/theme/runtime"
 export type {
   DiffMarkerStyle,
   MotionPreference,
@@ -34,6 +34,8 @@ export type {
   ThemeChartPalette,
   ThemeChartPalettePatch,
   ThemeEffects,
+  ThemeGradientPalette,
+  ThemeGradientPalettePatch,
   ThemeMode,
   ThemePalette,
   ThemePalettePatch,
@@ -42,4 +44,4 @@ export type {
   ThemeSidebarPalette,
   ThemeSidebarPalettePatch,
   ThemeTypography,
-} from "./types"
+} from "@/theme/types"
