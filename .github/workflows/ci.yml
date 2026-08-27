@@ -55,7 +55,7 @@ jobs:
           mapfile -d '' files < <(
             git -C .. diff --name-only -z --diff-filter=ACMR \
               "$BASE_SHA" "$HEAD_SHA" -- \
-              'web/**/*.ts' 'web/**/*.tsx' 'web/*.ts' 'web/*.tsx'
+              'web/**/*.js' 'web/**/*.ts' 'web/**/*.tsx' 'web/**/*.css' 'web/**/*.json' 'web/**/*.md' 'web/**/*.yml' 'web/**/*.yaml' 'web/*.js' 'web/*.ts' 'web/*.tsx' 'web/*.css' 'web/*.json' 'web/*.md' 'web/*.yml' 'web/*.yaml'
           )
 
           for index in "${!files[@]}"; do
@@ -65,7 +65,7 @@ jobs:
           if (( ${#files[@]} > 0 )); then
             npx --no-install prettier --check "${files[@]}"
           else
-            echo "No changed TypeScript files to check."
+            echo "No changed frontend files to check."
           fi
 
       - name: Build

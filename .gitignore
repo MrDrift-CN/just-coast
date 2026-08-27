@@ -60,3 +60,6 @@ Desktop.ini
 *.orig
 *.rej
 
+# Customize
+liquid-glass-login-page
+

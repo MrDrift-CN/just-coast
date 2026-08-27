@@ -1,0 +1,45 @@
+export {
+  DEFAULT_THEME_CONFIG,
+  THEME_STORAGE_KEY,
+  cloneThemeConfig,
+  mergeThemeConfig,
+  normalizeThemeConfig,
+  parseThemeConfig,
+  serializeThemeConfig,
+} from "./config"
+export {
+  ThemeProvider,
+  useTheme,
+  type ThemeContextValue,
+  type ThemeProviderProps,
+} from "./provider"
+export {
+  COLOR_SCHEME_QUERY,
+  REDUCED_MOTION_QUERY,
+  applyThemeConfig,
+  clearStoredTheme,
+  initializeTheme,
+  loadThemeConfig,
+  resolveMotionPreference,
+  resolveThemeMode,
+  saveThemeConfig,
+} from "./runtime"
+export type {
+  DiffMarkerStyle,
+  MotionPreference,
+  ResolvedMotionPreference,
+  ResolvedThemeMode,
+  ThemeConfig,
+  ThemeConfigPatch,
+  ThemeChartPalette,
+  ThemeChartPalettePatch,
+  ThemeEffects,
+  ThemeMode,
+  ThemePalette,
+  ThemePalettePatch,
+  ThemePreferences,
+  ThemeShape,
+  ThemeSidebarPalette,
+  ThemeSidebarPalettePatch,
+  ThemeTypography,
+} from "./types"

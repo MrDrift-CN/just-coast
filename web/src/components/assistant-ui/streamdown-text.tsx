@@ -18,6 +18,7 @@
  *
  * @see https://www.assistant-ui.com/docs/ui/streamdown#advanced-configuration
  * @see https://www.assistant-ui.com/docs/ui/streamdown#props
+ * @see https://ui.shadcn.com/docs/typeset
  * @packageDocumentation
  * @since 1.0.0
  */
@@ -245,7 +246,7 @@ export function StreamdownText() {
         blockedLinkClass: "pointer-events-none opacity-60",
         blockedImageClass: "hidden",
       }}
-      containerClassName="aui-md"
+      containerClassName="typeset"
     />
   )
 }

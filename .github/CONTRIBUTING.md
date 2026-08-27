@@ -119,6 +119,10 @@ BREAKING CHANGE: 客户端必须读取新的 message parts 结构。
 
 ## 前端验证
 
+前端样式修改必须遵守
+[样式与主题规范](../web/src/style/README.md)。样式优先使用 shadcn 组件变体和
+主题语义变量；Markdown 或其他语义化 HTML 内容统一通过 Typeset 排版。
+
 提交 PR 前在 `web` 目录执行：
 
 ```powershell
@@ -129,8 +133,8 @@ npx --no-install prettier --write <本次修改的文件>
 npm run build
 ```
 
-CI 会对 PR 中新增或修改的 TypeScript 文件执行 Prettier 检查，不会因为未触及的
-历史文件阻塞本次 PR。
+CI 会对 PR 中新增或修改的 JavaScript、TypeScript、CSS、JSON、Markdown 和
+YAML 文件执行 Prettier 检查，不会因为未触及的历史文件阻塞本次 PR。
 
 只提交 `.env.example` 中的示例配置。禁止提交真实令牌、密码、Cookie、私钥和
 包含敏感值的 `.env` 文件。

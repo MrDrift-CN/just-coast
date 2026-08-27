@@ -6,8 +6,10 @@ import "streamdown/styles.css"
 import "./index.css"
 import App from "./App.tsx"
 import { MarkdownRequestProvider } from "@/components/assistant-ui/streamdown-text"
-import { ThemeProvider } from "@/components/theme-provider.tsx"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { initializeTheme, ThemeProvider } from "@/theme"
+
+initializeTheme()
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
