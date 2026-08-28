@@ -9,6 +9,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import * as React from "react"
 
 /**
  * 密码输入字段属性。
@@ -49,18 +50,22 @@ export function PasswordField({
   const [visible, setVisible] = useState(false)
   const invalid = Boolean(error) || Boolean(inputProps["aria-invalid"])
   const errorId = `${id}-error`
+  const labelId = `${id}-label`
 
   return (
     <Field
       data-disabled={inputProps.disabled || undefined}
       data-invalid={invalid || undefined}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel htmlFor={id} id={labelId}>
+        {label}
+      </FieldLabel>
       <InputGroup className="auth-input-group">
         <InputGroupInput
           {...inputProps}
           aria-describedby={error ? errorId : inputProps["aria-describedby"]}
           aria-invalid={invalid || undefined}
+          aria-labelledby={inputProps["aria-labelledby"] ?? labelId}
           id={id}
           type={visible ? "text" : "password"}
         />
@@ -75,9 +80,9 @@ export function PasswordField({
             size="icon-xs"
           >
             {visible ? (
-              <EyeOffIcon aria-hidden="true" data-icon="inline-start" />
+              <EyeOffIcon aria-hidden="true" />
             ) : (
-              <EyeIcon aria-hidden="true" data-icon="inline-start" />
+              <EyeIcon aria-hidden="true" />
             )}
           </InputGroupButton>
         </InputGroupAddon>

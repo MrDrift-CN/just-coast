@@ -1,0 +1,2 @@
+commitMessageFile="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+npm --prefix web run commitlint -- --edit "$commitMessageFile"

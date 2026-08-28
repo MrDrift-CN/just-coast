@@ -1,29 +1,10 @@
 import { useCallback, useState } from "react"
 
+import { requestPasswordResetEmail, updatePassword } from "@/auth/api"
 import type {
   ForgotPasswordFormValues,
   ResetPasswordFormValues,
 } from "@/auth/types"
-
-const previewResetToken = "static-preview"
-
-/**
- * 请求发送密码重置邮件。
- *
- * @param email - 接收密码重置邮件的邮箱地址。
- * @returns 邮件服务完成后的 Promise。
- *
- * @remarks
- * 当前项目尚未接入邮件 API，因此该函数直接成功返回。接入后只需替换函数内部实现，
- * 页面与流程状态无需调整。
- *
- * @internal
- * @since 1.0.0
- */
-function requestPasswordResetEmail(email: string): Promise<void> {
-  void email
-  return Promise.resolve()
-}
 
 /**
  * 忘记密码静态流程。
@@ -40,24 +21,25 @@ function requestPasswordResetEmail(email: string): Promise<void> {
 export function useForgetPassword() {
   const [pending, setPending] = useState(false)
 
-  const requestReset = useCallback(
-    async ({ email }: ForgotPasswordFormValues) => {
-      setPending(true)
+  const requestReset = useCallback(async (values: ForgotPasswordFormValues) => {
+    setPending(true)
 
-      try {
-        await requestPasswordResetEmail(email)
-        return previewResetToken
-      } finally {
-        setPending(false)
-      }
-    },
-    []
-  )
+    try {
+      return await requestPasswordResetEmail(values)
+    } finally {
+      setPending(false)
+    }
+  }, [])
 
   const resetPassword = useCallback(
     async (values: ResetPasswordFormValues, currentResetToken: string) => {
-      void values
-      void currentResetToken
+      setPending(true)
+
+      try {
+        await updatePassword(values, currentResetToken)
+      } finally {
+        setPending(false)
+      }
     },
     []
   )

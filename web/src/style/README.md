@@ -37,23 +37,18 @@
 - 未出现明确产品需求时，不增加场景预设，也不覆盖 Streamdown 默认渲染组件。
 - 更新 `typeset.css` 时，应与 shadcn 官方版本对照并单独审查差异。
 
-参考：
-
-- https://tailwindcss.com/docs/theme
-- https://ui.shadcn.com/docs/theming
-- https://ui.shadcn.com/docs/typeset
-
 ## 检查
 
 `prettier-plugin-tailwindcss` 会根据 `src/index.css` 排序 Tailwind 类名。
 ESLint 会在业务组件中阻止原始 Tailwind 色板、任意颜色、手写 `dark:` 颜色以及
-`space-x-*`、`space-y-*`。`src/components/ui` 和
-`src/components/assistant-ui` 是上游生成源码，保留其原始实现并由代码审查把关。
-其他无法可靠静态判断的设计规则仍需要代码审查。
+`space-x-*`、`space-y-*`。Stylelint 检查自有 CSS、Tailwind 4 指令和 `#root`
+边界；reduced-motion 中必要的 `!important` 保留为可见警告。
+`src/components/ui` 和 `src/components/assistant-ui` 是上游生成源码，保留其原始实现并由代码审查把关。其他无法可靠静态判断的设计规则仍需要代码审查。
 
 ```powershell
 npm run format
 npm run lint
+npm run lint:css
 npm run typecheck
 npm run build
 ```

@@ -22,7 +22,7 @@
 ## 示例
 
     import { AuthShell } from "@/auth/components/auth-shell"
-    import type { AuthFormValues } from "@/auth/types"
+    import type { LoginFormValues } from "@/auth/types"
     import "@/auth/styles.css"
 
 ## 自动检查

@@ -15,8 +15,8 @@ export function LoginRoute() {
 
   return (
     <Login
-      onForgotPassword={() => navigate("/forget")}
-      onRegister={() => navigate("/register")}
+      onForgotPassword={() => void navigate("/forget")}
+      onRegister={() => void navigate("/register")}
     />
   )
 }
@@ -24,7 +24,7 @@ export function LoginRoute() {
 export function RegisterRoute() {
   const navigate = useNavigate()
 
-  return <Register onLogin={() => navigate("/login")} />
+  return <Register onLogin={() => void navigate("/login")} />
 }
 
 export function ForgetRoute() {
@@ -37,11 +37,11 @@ export function ForgetRoute() {
     <ForgotPassword
       pending={pending}
       resetToken={resetToken}
-      onLogin={() => navigate("/login")}
+      onLogin={() => void navigate("/login")}
       onRequestReset={async (values) => {
         const token = await requestReset(values)
 
-        navigate(
+        await navigate(
           {
             pathname: "/forget",
             search: createSearchParams({ token }).toString(),
@@ -51,7 +51,7 @@ export function ForgetRoute() {
       }}
       onResetPassword={async (values, token) => {
         await resetPassword(values, token)
-        navigate("/login", { replace: true })
+        await navigate("/login", { replace: true })
       }}
     />
   )

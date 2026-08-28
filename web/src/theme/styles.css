@@ -248,6 +248,17 @@ html[data-diff-marker="sign"] {
     @apply font-mono;
   }
 
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: var(--foreground);
+    caret-color: var(--foreground);
+    transition: background-color 9999s ease-out 0s;
+  }
+
   #root {
     filter: contrast(var(--theme-contrast-scale));
   }

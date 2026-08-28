@@ -1,0 +1,98 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2023": true
+  },
+  "ignorePatterns": ["dist", "coverage", "node_modules", "public", "*.min.*"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "plugins": ["react-refresh"],
+  "rules": {
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-nested-ternary": "error",
+    "no-void": ["error", { "allowAsStatement": true }],
+    "react-refresh/only-export-components": [
+      "warn",
+      { "allowConstantExport": true }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.{js,jsx,ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["./*", "./**", "../*", "../**"],
+                "message": "项目内部模块与样式必须通过 @/ 别名导入。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/**/*.{ts,tsx}"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "projectService": true
+      },
+      "plugins": ["@typescript-eslint"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended-type-checked",
+        "plugin:@typescript-eslint/stylistic-type-checked"
+      ],
+      "rules": {
+        "no-shadow": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "fixStyle": "inline-type-imports",
+            "prefer": "type-imports"
+          }
+        ],
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-shadow": "error",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/components/ui/**/*.{ts,tsx}",
+        "src/components/assistant-ui/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "no-nested-ternary": "off",
+        "react-hooks/refs": "off",
+        "react-hooks/set-state-in-effect": "off",
+        "react-hooks/static-components": "off",
+        "react-refresh/only-export-components": "off"
+      }
+    }
+  ]
+}

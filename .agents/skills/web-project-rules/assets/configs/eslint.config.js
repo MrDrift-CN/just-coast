@@ -1,21 +1,21 @@
-import js from "@eslint/js"
-import { defineConfig, globalIgnores } from "eslint/config"
-import reactHooks from "eslint-plugin-react-hooks"
-import reactRefresh from "eslint-plugin-react-refresh"
-import globals from "globals"
-import tseslint from "typescript-eslint"
+import js from "@eslint/js";
+import { defineConfig, globalIgnores } from "eslint/config";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
-const sourceFiles = ["src/**/*.{js,jsx,ts,tsx}"]
-const reactFiles = ["src/**/*.{jsx,tsx}"]
-const projectTypeScriptFiles = ["src/**/*.{ts,tsx}", "vite.config.ts"]
+const sourceFiles = ["src/**/*.{js,jsx,ts,tsx}"];
+const reactFiles = ["src/**/*.{jsx,tsx}"];
+const projectTypeScriptFiles = ["src/**/*.{ts,tsx}", "vite.config.ts"];
 const generatedFiles = [
   "src/components/assistant-ui/**/*.{ts,tsx}",
   "src/components/ui/**/*.{ts,tsx}",
   "src/hooks/use-mobile.ts",
-]
+];
 
 const classStringScope =
-  ":matches(JSXAttribute[name.name='className'], CallExpression[callee.name=/^(clsx|cn|cva)$/])"
+  ":matches(JSXAttribute[name.name='className'], CallExpression[callee.name=/^(clsx|cn|cva)$/])";
 
 const restrictedStyleSyntax = [
   {
@@ -54,7 +54,7 @@ const restrictedStyleSyntax = [
     message:
       "使用 flex/grid 的 gap-* 控制间距，不要使用 space-x-* 或 space-y-*。",
   },
-]
+];
 
 export default defineConfig([
   globalIgnores([
@@ -189,4 +189,4 @@ export default defineConfig([
       "react-refresh/only-export-components": "off",
     },
   },
-])
+]);
