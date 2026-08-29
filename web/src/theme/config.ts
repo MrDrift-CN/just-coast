@@ -9,11 +9,11 @@ import type {
   ThemePalettePatch,
 } from "@/theme/types"
 
-/** 浅色和深色主题共用的品牌主色。 */
-const LIGHT_PRIMARY = "oklch(0.7487 0.2019 149.77)"
+/** 浅色和深色主题共用的高明度蓝色主操作色。 */
+const PRIMARY = "#0084FF"
 
-/** 品牌主色背景上使用的前景色。 */
-const PRIMARY_FOREGROUND = "oklch(0.18 0.035 150)"
+/** 蓝色主操作背景上使用的高对比度黑色前景。 */
+const PRIMARY_FOREGROUND = "#000000"
 
 /** 应用正文与标题默认使用的字体栈。 */
 const DEFAULT_BODY_FONT = "'Geist Variable', sans-serif"
@@ -22,12 +22,20 @@ const DEFAULT_BODY_FONT = "'Geist Variable', sans-serif"
 const DEFAULT_MONO_FONT =
   "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
 
-/** 浅色和深色主题共用的装饰渐变默认值。 */
-const DEFAULT_GRADIENT = {
-  start: "color-mix(in oklab, var(--background) 88%, var(--primary))",
-  middle: "color-mix(in oklab, var(--background) 90%, var(--accent))",
-  end: "color-mix(in oklab, var(--background) 84%, var(--secondary))",
-  glow: "color-mix(in oklab, var(--primary) 62%, transparent)",
+/** 浅色模式认证页与装饰背景使用的明亮蓝青渐变。 */
+const LIGHT_GRADIENT = {
+  start: "#20D5C4",
+  middle: "#8DFFF4",
+  end: "#0084FF",
+  glow: "color-mix(in oklab, #20D5C4 54%, transparent)",
+} as const satisfies ThemeGradientPalette
+
+/** 深色模式装饰背景使用的蓝青渐变。 */
+const DARK_GRADIENT = {
+  start: "#002EB7",
+  middle: "#0084FF",
+  end: "#20D5C4",
+  glow: "color-mix(in oklab, #20D5C4 52%, transparent)",
 } as const satisfies ThemeGradientPalette
 
 /**
@@ -40,81 +48,81 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
   mode: "system",
   palettes: {
     light: {
-      background: "oklch(1 0 0)",
-      foreground: "oklch(0.145 0 0)",
-      card: "oklch(1 0 0)",
-      cardForeground: "oklch(0.145 0 0)",
-      popover: "oklch(1 0 0)",
-      popoverForeground: "oklch(0.145 0 0)",
-      primary: LIGHT_PRIMARY,
+      background: "#F8FFFF",
+      foreground: "#071426",
+      card: "#FFFFFF",
+      cardForeground: "#071426",
+      popover: "#FFFFFF",
+      popoverForeground: "#071426",
+      primary: PRIMARY,
       primaryForeground: PRIMARY_FOREGROUND,
-      secondary: "oklch(0.97 0 0)",
-      secondaryForeground: "oklch(0.205 0 0)",
-      muted: "oklch(0.97 0 0)",
-      mutedForeground: "oklch(0.556 0 0)",
-      accent: "oklch(0.97 0 0)",
-      accentForeground: "oklch(0.205 0 0)",
-      destructive: "oklch(0.577 0.245 27.325)",
-      destructiveForeground: "oklch(0.985 0 0)",
-      border: "oklch(0.922 0 0)",
-      input: "oklch(0.922 0 0)",
-      ring: LIGHT_PRIMARY,
-      gradient: { ...DEFAULT_GRADIENT },
+      secondary: "#EAFFFD",
+      secondaryForeground: "#002EB7",
+      muted: "#F1F7F8",
+      mutedForeground: "#5A6878",
+      accent: "#D6FCF8",
+      accentForeground: "#002EB7",
+      destructive: "#D43D50",
+      destructiveForeground: "#FFFFFF",
+      border: "#CFE5EA",
+      input: "#BBD9E2",
+      ring: PRIMARY,
+      gradient: { ...LIGHT_GRADIENT },
       charts: {
-        chart1: "oklch(0.87 0 0)",
-        chart2: "oklch(0.556 0 0)",
-        chart3: "oklch(0.439 0 0)",
-        chart4: "oklch(0.371 0 0)",
-        chart5: "oklch(0.269 0 0)",
+        chart1: "#002EB7",
+        chart2: "#0084FF",
+        chart3: "#0AAE9F",
+        chart4: "#6C63D8",
+        chart5: "#D08A1E",
       },
       sidebar: {
-        background: "oklch(0.985 0 0)",
-        foreground: "oklch(0.145 0 0)",
-        primary: LIGHT_PRIMARY,
+        background: "#F7FFFF",
+        foreground: "#071426",
+        primary: PRIMARY,
         primaryForeground: PRIMARY_FOREGROUND,
-        accent: "oklch(0.97 0 0)",
-        accentForeground: "oklch(0.205 0 0)",
-        border: "oklch(0.922 0 0)",
-        ring: "oklch(0.708 0 0)",
+        accent: "#D6FCF8",
+        accentForeground: "#002EB7",
+        border: "#CFE5EA",
+        ring: PRIMARY,
       },
     },
     dark: {
-      background: "oklch(0.145 0 0)",
-      foreground: "oklch(0.985 0 0)",
-      card: "oklch(0.205 0 0)",
-      cardForeground: "oklch(0.985 0 0)",
-      popover: "oklch(0.205 0 0)",
-      popoverForeground: "oklch(0.985 0 0)",
-      primary: LIGHT_PRIMARY,
+      background: "#07111F",
+      foreground: "#EAF6FF",
+      card: "#0C1B2D",
+      cardForeground: "#EAF6FF",
+      popover: "#0F2238",
+      popoverForeground: "#EAF6FF",
+      primary: PRIMARY,
       primaryForeground: PRIMARY_FOREGROUND,
-      secondary: "oklch(0.269 0 0)",
-      secondaryForeground: "oklch(0.985 0 0)",
-      muted: "oklch(0.269 0 0)",
-      mutedForeground: "oklch(0.708 0 0)",
-      accent: "oklch(0.269 0 0)",
-      accentForeground: "oklch(0.985 0 0)",
-      destructive: "oklch(0.704 0.191 22.216)",
-      destructiveForeground: "oklch(0.985 0 0)",
-      border: "oklch(1 0 0 / 10%)",
-      input: "oklch(1 0 0 / 15%)",
-      ring: LIGHT_PRIMARY,
-      gradient: { ...DEFAULT_GRADIENT },
+      secondary: "#13283E",
+      secondaryForeground: "#DCEBFA",
+      muted: "#102236",
+      mutedForeground: "#9AAFC3",
+      accent: "#0B3D46",
+      accentForeground: "#8DFFF4",
+      destructive: "#FF6B78",
+      destructiveForeground: "#2B080D",
+      border: "#20364D",
+      input: "#29445F",
+      ring: "#20D5C4",
+      gradient: { ...DARK_GRADIENT },
       charts: {
-        chart1: "oklch(0.87 0 0)",
-        chart2: "oklch(0.556 0 0)",
-        chart3: "oklch(0.439 0 0)",
-        chart4: "oklch(0.371 0 0)",
-        chart5: "oklch(0.269 0 0)",
+        chart1: "#5AAEFF",
+        chart2: "#20D5C4",
+        chart3: "#8DFFF4",
+        chart4: "#9B8CFF",
+        chart5: "#FFC565",
       },
       sidebar: {
-        background: "oklch(0.205 0 0)",
-        foreground: "oklch(0.985 0 0)",
-        primary: LIGHT_PRIMARY,
+        background: "#091A2B",
+        foreground: "#EAF6FF",
+        primary: PRIMARY,
         primaryForeground: PRIMARY_FOREGROUND,
-        accent: "oklch(0.269 0 0)",
-        accentForeground: "oklch(0.985 0 0)",
-        border: "oklch(1 0 0 / 10%)",
-        ring: "oklch(0.556 0 0)",
+        accent: "#12364B",
+        accentForeground: "#8DFFF4",
+        border: "#20364D",
+        ring: "#20D5C4",
       },
     },
   },

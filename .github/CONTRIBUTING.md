@@ -133,8 +133,8 @@ npx --no-install prettier --write <本次修改的文件>
 npm run build
 ```
 
-CI 会对 PR 中新增或修改的 JavaScript、TypeScript、CSS、JSON、Markdown 和
-YAML 文件执行 Prettier 检查，不会因为未触及的历史文件阻塞本次 PR。
+CI 会对 PR 中新增或修改的 JavaScript、TypeScript、CSS、JSON 和 YAML 文件
+执行 Prettier 检查，不会因为未触及的历史文件或 Markdown 文档阻塞代码提交。
 
 只提交 `.env.example` 中的示例配置。禁止提交真实令牌、密码、Cookie、私钥和
 包含敏感值的 `.env` 文件。

@@ -55,7 +55,7 @@ jobs:
           mapfile -d '' files < <(
             git -C .. diff --name-only -z --diff-filter=ACMR \
               "$BASE_SHA" "$HEAD_SHA" -- \
-              'web/**/*.js' 'web/**/*.ts' 'web/**/*.tsx' 'web/**/*.css' 'web/**/*.json' 'web/**/*.md' 'web/**/*.yml' 'web/**/*.yaml' 'web/*.js' 'web/*.ts' 'web/*.tsx' 'web/*.css' 'web/*.json' 'web/*.md' 'web/*.yml' 'web/*.yaml'
+              'web/**/*.js' 'web/**/*.ts' 'web/**/*.tsx' 'web/**/*.css' 'web/**/*.json' 'web/**/*.yml' 'web/**/*.yaml' 'web/*.js' 'web/*.ts' 'web/*.tsx' 'web/*.css' 'web/*.json' 'web/*.yml' 'web/*.yaml'
           )
 
           for index in "${!files[@]}"; do

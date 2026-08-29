@@ -4,3 +4,6 @@ coverage/
 .pnpm-store/
 public/
 package-lock.json
+
+# Markdown 文档由文档审查负责，不进入代码格式检查。
+**/*.md

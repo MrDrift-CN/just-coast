@@ -20,7 +20,7 @@
 - **必须**优先使用 `stylelint.config.js`。`.stylelintrc` 只服务于兼容旧版 Stylelint 的项目。
 - **必须**按目标项目调整 `.prettierrc` 中 Tailwind 样式入口，不得假定所有项目都使用 `src/style/index.css`。
 - **必须**让 `commitlint.config.js` 的提交类型与 `git.md` 完全一致；修改一侧时同步修改另一侧。
-- **必须**让 lint-staged 只处理暂存文件。禁止在其中运行全项目 typecheck、build 或 `git add`。
+- **必须**让 lint-staged 只处理暂存的代码、样式和结构化配置文件。Markdown 文档不属于代码检查范围，不得匹配 `*.md`；禁止在其中运行全项目 typecheck、build 或 `git add`。
 - **必须**根据目标项目的模块系统选择文件格式。模板使用 ESM；CommonJS 项目应改用 `.cjs` 并转换导出语法。
 - **必须**核对脚本名称与文件匹配模式，禁止复制后依赖不存在的 `lint`、`stylelint` 或格式化命令。
 - **应该**沿用目标项目现有的 Git Hook 工具，不由模板强制引入新的 Hook 管理方案。
@@ -68,7 +68,7 @@
 
 | 审查层      | 当前状态                   | 实际入口或边界                                                                                       |
 | ----------- | -------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Prettier    | 已接入                     | `web/.prettierrc`、`web/.prettierignore`、`npm run format` 与 `npm run format:check`                 |
+| Prettier    | 已接入                     | `web/.prettierrc`、`web/.prettierignore`、`npm run format` 与 `npm run format:check`；忽略 Markdown |
 | ESLint      | 已接入类型感知 Flat Config | `web/eslint.config.js`、`npm run lint` 与 `npm run lint:fix`；JSX 可访问性插件受 ESLint 10 peer 约束 |
 | TypeScript  | 已接入                     | `npm run typecheck`，生产构建还会执行 `tsc -b`                                                       |
 | 生产构建    | 已接入                     | `npm run build`                                                                                      |
@@ -115,7 +115,8 @@
 **覆盖**：提交类型一致、暂存文件范围、禁止高成本全量任务和 `git add`。
 
 - 新增提交类型时，同时修改 `references/git.md` 与 `commitlint.config.js`，不能一侧接受、另一侧拒绝。
-- lint-staged 可以对匹配的暂存 TS/TSX 运行 ESLint 和 Prettier。
+- lint-staged 可以对匹配的暂存 TS/TSX 运行 ESLint 和 Prettier，对 CSS 运行 Stylelint 和 Prettier，并对 HTML、JSON、JSONC、YAML 运行 Prettier。
+- Markdown 文档不匹配 lint-staged，也不参与 CI 的代码格式检查；文档正确性由对应文档任务和人工审查负责。
 - lint-staged 不运行全项目 `npm run typecheck`、`npm run build`，也不执行 `git add`；这些由正常验证或 CI 负责。
 
 ### 案例：模块系统和脚本名称必须适配

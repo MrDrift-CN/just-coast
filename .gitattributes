@@ -1,5 +1,6 @@
 # Keep repository text files consistent across operating systems.
 * text=auto
+.gitattributes text eol=lf
 
 # Use LF for source and configuration files.
 *.css text eol=lf
@@ -19,6 +20,7 @@
 *.xml text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
+.prettierignore text eol=lf
 
 # Keep Windows command files on CRLF.
 *.bat text eol=crlf
@@ -53,4 +55,3 @@
 *.xls binary
 *.xlsx binary
 *.zip binary
-
