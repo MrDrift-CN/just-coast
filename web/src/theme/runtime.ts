@@ -1,11 +1,5 @@
-import {
-  DEFAULT_THEME_CONFIG,
-  THEME_STORAGE_KEY,
-  cloneThemeConfig,
-  normalizeThemeConfig,
-  parseThemeConfig,
-  serializeThemeConfig,
-} from "@/theme/config"
+import { DEFAULT_THEME_CONFIG, normalizeThemeConfig } from "@/theme/config"
+import { readStoredThemeConfig, THEME_STORAGE_KEY } from "@/theme/storage"
 import type {
   MotionPreference,
   ResolvedMotionPreference,
@@ -21,11 +15,13 @@ export const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
 /** 系统减少动效媒体查询。 */
 export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)"
 
+/** 不包含嵌套渐变、图表和侧栏对象的主色板字段。 */
 type MainPaletteKey = keyof Omit<
   ThemePalette,
   "gradient" | "charts" | "sidebar"
 >
 
+/** 主色板字段到根元素 CSS 自定义属性的映射。 */
 const PALETTE_PROPERTIES = [
   ["--background", "background"],
   ["--foreground", "foreground"],
@@ -48,6 +44,7 @@ const PALETTE_PROPERTIES = [
   ["--ring", "ring"],
 ] as const satisfies readonly (readonly [string, MainPaletteKey])[]
 
+/** 图表色字段到根元素 CSS 自定义属性的映射。 */
 const CHART_PROPERTIES = [
   ["--chart-1", "chart1"],
   ["--chart-2", "chart2"],
@@ -59,6 +56,7 @@ const CHART_PROPERTIES = [
   keyof ThemePalette["charts"],
 ])[]
 
+/** 装饰渐变字段到根元素 CSS 自定义属性的映射。 */
 const GRADIENT_PROPERTIES = [
   ["--gradient-start", "start"],
   ["--gradient-middle", "middle"],
@@ -69,6 +67,7 @@ const GRADIENT_PROPERTIES = [
   keyof ThemePalette["gradient"],
 ])[]
 
+/** 侧边栏色板字段到根元素 CSS 自定义属性的映射。 */
 const SIDEBAR_PROPERTIES = [
   ["--sidebar", "background"],
   ["--sidebar-foreground", "foreground"],
@@ -83,11 +82,13 @@ const SIDEBAR_PROPERTIES = [
   keyof ThemePalette["sidebar"],
 ])[]
 
-function canUseDom() {
+/** 判断当前运行环境是否能够操作浏览器文档。 */
+function canUseDom(): boolean {
   return typeof window !== "undefined" && typeof document !== "undefined"
 }
 
-function supportsCssValue(property: string, value: string) {
+/** 判断浏览器是否接受指定 CSS 属性值。 */
+function supportsCssValue(property: string, value: string): boolean {
   return (
     typeof CSS === "undefined" ||
     typeof CSS.supports !== "function" ||
@@ -95,24 +96,45 @@ function supportsCssValue(property: string, value: string) {
   )
 }
 
+/**
+ * 安全读取媒体查询结果。
+ *
+ * @param query - 需要检查的 CSS 媒体查询。
+ * @returns 查询是否匹配；API 不可用或查询失败时返回 false。
+ */
+function matchesMediaQuery(query: string): boolean {
+  if (!canUseDom() || typeof window.matchMedia !== "function") {
+    return false
+  }
+
+  try {
+    return window.matchMedia(query).matches
+  } catch {
+    // 媒体查询不可用时使用显式的浅色和完整动效安全默认值。
+    return false
+  }
+}
+
+/** 在浏览器支持时写入 CSS 属性，否则写入已知安全的回退值。 */
 function setSupportedProperty(
   root: HTMLElement,
   property: string,
   cssProperty: string,
   value: string,
   fallback: string
-) {
+): void {
   root.style.setProperty(
     property,
     supportsCssValue(cssProperty, value) ? value : fallback
   )
 }
 
+/** 将一套语义色板映射到根元素的 CSS 自定义属性。 */
 function applyPalette(
   root: HTMLElement,
   palette: ThemePalette,
   fallback: ThemePalette
-) {
+): void {
   for (const [property, key] of PALETTE_PROPERTIES) {
     setSupportedProperty(root, property, "color", palette[key], fallback[key])
   }
@@ -151,7 +173,7 @@ function applyPalette(
 /** 将主题模式解析为实际使用的浅色或深色模式。 */
 export function resolveThemeMode(
   mode: ThemeMode,
-  systemDark = canUseDom() && window.matchMedia(COLOR_SCHEME_QUERY).matches
+  systemDark = matchesMediaQuery(COLOR_SCHEME_QUERY)
 ): ResolvedThemeMode {
   if (mode !== "system") return mode
   return systemDark ? "dark" : "light"
@@ -160,51 +182,60 @@ export function resolveThemeMode(
 /** 将动效偏好解析为实际使用的模式。 */
 export function resolveMotionPreference(
   preference: MotionPreference,
-  systemReduced = canUseDom() && window.matchMedia(REDUCED_MOTION_QUERY).matches
+  systemReduced = matchesMediaQuery(REDUCED_MOTION_QUERY)
 ): ResolvedMotionPreference {
   if (preference !== "system") return preference
   return systemReduced ? "reduce" : "full"
 }
 
-/** 从浏览器存储读取主题配置。 */
-export function loadThemeConfig(
-  storageKey = THEME_STORAGE_KEY,
-  fallback: ThemeConfig = DEFAULT_THEME_CONFIG
-): ThemeConfig {
-  if (!canUseDom()) return cloneThemeConfig(fallback)
+/**
+ * 订阅系统配色和减少动效偏好变化。
+ *
+ * @param listener - 任一系统偏好变化时执行的刷新函数。
+ * @returns 对称移除本函数建立的全部监听的清理函数。
+ */
+export function subscribeToSystemPreferences(listener: () => void): () => void {
+  if (!canUseDom() || typeof window.matchMedia !== "function") {
+    return () => undefined
+  }
+
+  const subscribedQueries: MediaQueryList[] = []
 
   try {
-    const stored = window.localStorage.getItem(storageKey)
-    if (stored) return parseThemeConfig(stored, fallback)
-    return cloneThemeConfig(fallback)
+    const queries = [
+      window.matchMedia(COLOR_SCHEME_QUERY),
+      window.matchMedia(REDUCED_MOTION_QUERY),
+    ]
+
+    for (const query of queries) {
+      query.addEventListener("change", listener)
+      subscribedQueries.push(query)
+    }
+
+    /** 移除当前订阅建立的系统偏好监听。 */
+    function unsubscribe(): void {
+      for (const query of subscribedQueries) {
+        query.removeEventListener("change", listener)
+      }
+    }
+
+    return unsubscribe
   } catch {
-    return cloneThemeConfig(fallback)
+    // 部分订阅失败时回滚已注册监听，避免受限浏览器留下孤立副作用。
+    for (const query of subscribedQueries) {
+      query.removeEventListener("change", listener)
+    }
+    return () => undefined
   }
 }
 
-/** 将完整主题配置保存到浏览器。 */
-export function saveThemeConfig(
-  config: ThemeConfig,
-  storageKey = THEME_STORAGE_KEY
-) {
-  if (!canUseDom()) return
+/** 主题配置应用到文档后得到的具体运行时状态。 */
+export interface AppliedThemeState {
+  /** 当前实际使用的浅色或深色模式。 */
+  resolvedTheme: ResolvedThemeMode
 
-  try {
-    window.localStorage.setItem(storageKey, serializeThemeConfig(config))
-  } catch {
-    // 隐私模式或存储空间不足时，当前会话仍可继续使用内存中的配置。
-  }
-}
-
-/** 清除浏览器中保存的主题配置。 */
-export function clearStoredTheme(storageKey = THEME_STORAGE_KEY) {
-  if (!canUseDom()) return
-
-  try {
-    window.localStorage.removeItem(storageKey)
-  } catch {
-    // 存储不可用时无需阻止主题恢复默认值。
-  }
+  /** 当前实际使用的减少或完整动效模式。 */
+  resolvedMotion: ResolvedMotionPreference
 }
 
 /**
@@ -215,10 +246,7 @@ export function clearStoredTheme(storageKey = THEME_STORAGE_KEY) {
 export function applyThemeConfig(
   config: ThemeConfig,
   root = canUseDom() ? document.documentElement : undefined
-): {
-  resolvedTheme: ResolvedThemeMode
-  resolvedMotion: ResolvedMotionPreference
-} {
+): AppliedThemeState {
   const normalized = normalizeThemeConfig(config)
   const resolvedTheme = resolveThemeMode(normalized.mode)
   const resolvedMotion = resolveMotionPreference(normalized.effects.motion)
@@ -283,12 +311,31 @@ export function applyThemeConfig(
   return { resolvedTheme, resolvedMotion }
 }
 
-/** 在 React 挂载前恢复并应用主题，避免首屏主题闪烁。 */
+/**
+ * 在 React 挂载前恢复并应用主题，避免首屏主题闪烁。
+ *
+ * @param storageKey - 与 ThemeProvider 保持一致的主题存储键。
+ * @param fallback - 没有合法持久化配置时使用的完整主题。
+ * @returns 本次初始化读取并应用的主题配置。
+ *
+ * @example
+ * ```tsx
+ * import { createRoot } from "react-dom/client"
+ * import { initializeTheme, ThemeProvider } from "@/theme"
+ *
+ * initializeTheme()
+ * createRoot(root).render(
+ *   <ThemeProvider>
+ *     <App />
+ *   </ThemeProvider>
+ * )
+ * ```
+ */
 export function initializeTheme(
-  storageKey = THEME_STORAGE_KEY,
+  storageKey: string = THEME_STORAGE_KEY,
   fallback: ThemeConfig = DEFAULT_THEME_CONFIG
 ): ThemeConfig {
-  const config = loadThemeConfig(storageKey, fallback)
+  const config = readStoredThemeConfig(storageKey, fallback)
   applyThemeConfig(config)
   return config
 }

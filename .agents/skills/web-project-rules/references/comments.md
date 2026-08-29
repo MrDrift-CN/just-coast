@@ -22,6 +22,18 @@
 - 禁止用注释保留废弃实现、变更历史、作者签名或大段被注释掉的代码；这些信息由 Git 记录。
 - 禁止在源代码、生效规则和项目开发文档中写入外部规范链接作为裁决依据；应把经过项目适配的结论直接写清楚。
 
+## 强制文档覆盖
+
+- 每个自有具名函数都必须在声明前使用 TSDoc 说明职责，包括导出函数、私有辅助函数、React 组件、自定义 Hook、事件处理器，以及赋值给标识符的箭头函数或函数表达式。
+- 每个自有数据模型都必须有 TSDoc，包括 `interface`、`type`、类、DTO、领域模型、Props、状态、配置和解析结果；模型中的每个字段、联合分支和具有独立含义的成员也必须说明业务语义或约束。
+- 每个自有模块级常量都必须有 TSDoc，包括默认值、限制值、键名、映射表、选项集合和正则表达式；文档必须说明常量在项目中的用途或约束来源。
+- 普通局部变量不是模块契约，不要求仅因使用 `const` 声明就添加文档；但局部具名函数仍属于函数，必须写 TSDoc。
+- 一次性、单表达式且没有独立职责的匿名内联回调可以不单独写文档。匿名回调一旦包含分支、多个语句、副作用、异常处理或可复用语义，必须提取为具名函数并按函数规则编写 TSDoc。
+- `index.ts` 中的纯重导出不重复复制来源声明的文档；调用方应在实际声明位置读取唯一权威说明。
+- 上游或生成文件继续遵循本文件的上游边界，不得为满足覆盖率而批量补写项目文档。
+
+强制覆盖不等于允许占位注释。文档必须说明职责、业务含义、输入输出契约、限制或维护边界中的至少一项；禁止只写“函数”“数据模型”“常量”“字段”或把标识符翻译成中文。
+
 ## 必须注释的场景
 
 以下信息无法通过命名、类型或结构充分表达时，必须写短而具体的注释：
@@ -38,7 +50,7 @@
 ## TSDoc 与公开契约
 
 - 使用 `/** ... */` 编写 TSDoc；普通局部解释使用 `//`。禁止用多行 `//` 模拟公开 API 文档。
-- 导出的函数、组件、Hook、类型、服务或常量只有在名称和类型不足以让调用方安全使用时才需要 TSDoc；不要求为每个导出机械生成文档块。
+- 所有自有具名函数、数据模型与字段、模块级常量都必须具有 TSDoc；公开与私有只影响文档内容，不影响是否需要文档。
 - 文档首句必须直接说明职责或契约，不能使用“函数”“数据模型”“常量”等只复述声明种类的占位描述。
 - `@param` 只补充取值含义、单位、约束、所有权或默认行为，不重复参数名和 TypeScript 类型。
 - `@returns` 只说明调用方需要知道的结果语义、身份稳定性、缓存或特殊状态，不重复 `Promise<T>` 等签名信息。
@@ -47,7 +59,7 @@
 - `@template` 仅在泛型角色或约束不直观时使用；`@example` 仅在正确调用方式容易误解时使用。
 - `@deprecated` 必须同时给出替代方案和迁移或删除条件，不能只有“已废弃”。
 - 不机械添加 `@public`、`@readonly`、`@since`。可见性与只读性由 TypeScript 表达；版本历史由 Git 和发布记录管理。只有项目实际接入的文档或发布工具消费这些标签时才允许使用。
-- 接口字段、Props 和常量成员只在名称与类型仍无法表达语义时单独注释；禁止为每个字段生成“参数一”“是否启用”式复述。
+- 接口字段、Props、联合分支和常量成员必须逐项说明业务语义、默认行为或约束；即使语义简单也不得省略，但禁止生成“参数一”“是否启用”式占位复述。
 
 ## React、Hook 与 Effect
 
@@ -115,7 +127,7 @@ const locale = readLocaleWithLegacyFallback();
 
 ### 案例：按语义编写 TSDoc
 
-**覆盖**：TSDoc 语法、公开契约触发条件、首句职责，以及按需使用 `@param`、`@returns`、`@throws`、`@remarks`、`@template` 和 `@example`。
+**覆盖**：TSDoc 语法、强制覆盖、首句职责、禁止占位复述，以及按需使用 `@param`、`@returns`、`@throws`、`@remarks`、`@template` 和 `@example`。
 
 ```ts
 // ❌ 复述声明、类型和所有未知错误
@@ -142,15 +154,69 @@ export async function loadVisibleUser(userId: UserId): Promise<User> {
 }
 ```
 
-简单的 `export function formatDisplayName(user: User): string` 若名称、类型和实现已足够清楚，可以不写 TSDoc。
+即使 `formatDisplayName` 的名称、类型和实现足够清楚，也必须写职责摘要；清楚的签名只意味着不需要机械补充 `@param` 和 `@returns`。
+
+### 案例：函数、模型和模块常量完整覆盖
+
+**覆盖**：公开与私有具名函数、组件、Hook、事件处理器、数据模型及字段、模块级常量、局部变量、匿名回调、纯重导出和上游边界。
+
+```ts
+/** 登录密码的最少字符数；表单约束与请求校验必须复用此值。 */
+export const PASSWORD_MIN_LENGTH = 8;
+
+/** 浏览器校验通过后的登录字段。 */
+export interface LoginFormValues {
+  /** 用于认证并接收账号通知的邮箱地址。 */
+  email: string;
+
+  /** 尚未加密传输前的原始密码，不得写入日志或持久化。 */
+  password: string;
+}
+
+/** 从原生表单中读取登录字段，缺失或非文本值按空字符串处理。 */
+export function parseLoginFormData(formData: FormData): LoginFormValues {
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  return {
+    email: typeof email === "string" ? email : "",
+    password: typeof password === "string" ? password : "",
+  };
+}
+
+// ❌ 多语句匿名回调隐藏了独立职责
+button.addEventListener("click", async () => {
+  const values = parseLoginFormData(new FormData(form));
+  await submitLogin(values);
+});
+
+/** 提交当前登录表单，并把失败交给页面级错误边界处理。 */
+async function handleLoginClick(): Promise<void> {
+  const values = parseLoginFormData(new FormData(form));
+  await submitLogin(values);
+}
+
+button.addEventListener("click", handleLoginClick);
+```
+
+函数体中的 `email`、`password` 和 `values` 是普通局部变量，不要求逐个写文档；`items.map((item) => item.id)` 这类一次性单表达式匿名回调也不单独写 TSDoc。匿名回调包含分支、多个语句、副作用或可复用语义时，必须像 `handleLoginClick` 一样提取并记录职责。
+
+`index.ts` 的纯重导出不复制来源声明的文档。`web/src/components/ui`、`web/src/components/assistant-ui` 和生成文件继续遵循上游边界，不得为满足覆盖要求批量改写。
 
 ### 案例：不机械复制文档标签
 
 **覆盖**：`@deprecated` 替代与删除条件，限制 `@public`、`@readonly`、`@since`，字段注释只补充真实语义。
 
 ```ts
-interface LocalePreference {
+// ❌ 模型没有职责说明，字段注释只是翻译标识符
+interface IncompleteLocalePreference {
   // ❌ 语言。
+  locale: Locale;
+}
+
+/** 用户界面的语言与时区偏好。 */
+interface LocalePreference {
+  /** 用于界面翻译与区域格式化的语言。 */
   locale: Locale;
 
   /** IANA 时区；缺省时使用浏览器解析结果，不代表 UTC。 */
@@ -158,6 +224,8 @@ interface LocalePreference {
 }
 
 /**
+ * 读取旧存储结构中的语言值。
+ *
  * @deprecated 改用 `readLocalePreference`；旧存储键迁移完成后删除。
  */
 export function readLanguage(): Locale {
@@ -172,15 +240,18 @@ export function readLanguage(): Locale {
 **覆盖**：必须注释的不变量、兼容与迁移、异步竞态、清理、安全边界，以及组件、Hook、Effect 和 JSX 注释边界。
 
 ```tsx
+/** 创建当前查询的可取消请求，并返回终止该请求的清理函数。 */
+function subscribeToAccountSearch(query: string): () => void {
+  const controller = new AbortController();
+
+  void searchAccounts(query, { signal: controller.signal });
+
+  return () => controller.abort();
+}
+
+/** 在查询变化时替换账号搜索请求，避免过期响应覆盖当前结果。 */
 export function useAccountSearch(query: string) {
-  useEffect(() => {
-    const controller = new AbortController();
-
-    // 查询变化时取消旧请求，避免较慢的旧响应覆盖当前结果。
-    void searchAccounts(query, { signal: controller.signal });
-
-    return () => controller.abort();
-  }, [query]);
+  useEffect(() => subscribeToAccountSearch(query), [query]);
 }
 
 // ❌ JSX 结构本身已经清楚

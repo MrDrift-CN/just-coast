@@ -23,7 +23,7 @@ Use this Skill as the authoritative engineering-rule entry point for the `web` p
 | --------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | Any owned frontend source or tooling change                                             | `references/general.md`, `references/codeReview.md`             |
 | TypeScript or JavaScript types, imports, naming, errors, async code                     | `references/typescript.md`                                      |
-| Comments, TSDoc, TODO/FIXME, suppressions, workarounds, or repository documentation     | `references/comments.md`                                        |
+| Owned named functions, data models/fields, module constants, comments, or documentation | `references/comments.md`                                        |
 | React components, pages, routes, JSX, rendering, Suspense                               | `references/react.md`                                           |
 | CSS, Tailwind, theme tokens, responsive layout, motion, `Typeset`                       | `references/css.md`                                             |
 | Shared components, shadcn/ui, assistant-ui, wrappers, accessibility                     | `references/components.md`, `references/react.md`               |
@@ -45,7 +45,7 @@ Common combinations:
 - New or changed product UI: `general.md`, `codeReview.md`, `typescript.md`, `react.md`, `components.md`, `css.md`, and `i18n.md`.
 - Stateful UI with a custom Hook: add `hooks.md` and `state.md`.
 - Data-driven authenticated UI: add `api.md` and `security.md`.
-- Public contracts, non-obvious invariants, workarounds, migrations, suppressions, or documentation changes: add `comments.md`.
+- Any owned named function, data model or field, module-level constant, public contract, workaround, suppression, or documentation change: add `comments.md`.
 - File or component rename: add `directory.md`; preserve public imports or migrate every consumer atomically.
 - Development work: use `codeReview.md` continuously, not only after implementation is complete.
 - Pull Request or merge review: use `PReview.md` as the approval procedure and domain references as acceptance criteria.
@@ -53,11 +53,12 @@ Common combinations:
 ## Non-negotiable project invariants
 
 - Use `@/` for internal imports and keep dependency direction consistent with the directory rules.
-- Use camel-style names for owned files: PascalCase for React components and pages, lowerCamelCase for Hooks, utilities, services, stores, and other modules. Preserve official filenames only inside the two upstream/generated component directories.
+- Use camel-style names for owned files: PascalCase for React components and pages, lowerCamelCase for Hooks, utilities, services, stores, and other modules. Do not repeat the direct directory name or its established responsibility as a filename prefix or suffix. Preserve official filenames only inside the two upstream/generated component directories.
 - Use semantic design tokens and existing theme primitives; do not hard-code a parallel visual system.
 - Internationalize user-visible text and preserve locale-aware formatting.
 - Do not weaken TypeScript, linting, accessibility, security, or validation controls to make a change pass.
 - Do not bulk-format, rename, overwrite, or regenerate unrelated user or upstream code.
+- Document every owned named function, data model and field, and module-level constant with concise TSDoc; apply the detailed boundaries in `references/comments.md`.
 - External style guides are research input only. They never override the project-adapted conclusions in this Skill.
 
 ## Configuration assets

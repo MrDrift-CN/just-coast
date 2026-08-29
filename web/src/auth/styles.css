@@ -1,10 +1,4 @@
-/**
- * Authentication surfaces.
- *
- * The liquid-glass composition consumes the global theme gradient tokens. Theme
- * changes therefore update the background without coupling authentication pages
- * to a fixed brand palette.
- */
+/* 认证页面只消费全局主题渐变令牌，不维护独立品牌色板。 */
 
 .auth-shell {
   position: relative;

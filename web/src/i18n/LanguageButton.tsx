@@ -11,20 +11,26 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { isLocalePreference } from "@/i18n/locale"
+import { useLocale } from "@/i18n/useLocale"
 
-import { useLocale } from "@/i18n/hooks"
-
-/**
- * 提供可在任意界面复用的应用语言选择入口。
- *
- * @returns 国际化语言选择按钮。
- *
- * @public
- * @since 1.0.0
- */
-export function I18nButton() {
+/** 提供可在任意界面复用的应用语言选择入口。 */
+export function LanguageButton() {
   const { t } = useTranslation("common")
   const { preference, setLocale } = useLocale()
+
+  /** 校验菜单值后应用语言偏好。 */
+  async function handleLocaleChange(value: unknown): Promise<void> {
+    if (!isLocalePreference(value)) {
+      return
+    }
+
+    try {
+      await setLocale(value)
+    } catch {
+      // 内置资源切换失败时保留当前可用语言和偏好。
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -44,7 +50,7 @@ export function I18nButton() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("language.label")}</DropdownMenuLabel>
           <DropdownMenuRadioGroup
-            onValueChange={(value) => void setLocale(value)}
+            onValueChange={(value) => void handleLocaleChange(value)}
             value={preference}
           >
             <DropdownMenuRadioItem closeOnClick value="system">

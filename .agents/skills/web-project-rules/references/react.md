@@ -60,6 +60,9 @@
 ## 状态与组合
 
 - 状态放在能够拥有它的最低公共层级。
+- 页面可以直接拥有页面专属的路由输入、局部状态、派生值、事件处理、短小表单解析和流程编排；不得只因这些代码使用 Hook、函数较多或文件达到任意行数就拆出新模块。
+- Effect 的存在不自动要求提取自定义 Hook。只有它形成可清楚命名的独立生命周期、隐藏调用方不应掌握的时序，或具有稳定复用语义时才提取。
+- 页面专属代码先与页面共置；提取组件、Hook、服务或领域模块时必须说明被隔离的 UI 契约、React 生命周期、外部协议或业务不变量。
 - 优先通过组合、`children` 和明确插槽扩展组件，不通过大量模式布尔值控制内部布局。
 - 不把可以从 Props 或现有 State 得出的值重复存入 State。
 - Context 只承载跨层级共享且语义稳定的状态，不作为所有局部状态的默认容器。
@@ -124,7 +127,7 @@ export function PasswordField({ value, onChange }: PasswordFieldProps) {
 
 ```tsx
 // ✅ 路由实例在 React 树外创建，动态路径可被 Vite 分析
-const SettingsPage = lazy(() => import("@/settings/pages/SettingsPage"));
+const SettingsPage = lazy(() => import("@/settings/pages/Settings"));
 
 export const router = createBrowserRouter([
   { path: "/settings", element: <SettingsPage /> },
@@ -249,10 +252,12 @@ return (
 
 ### 案例：状态归属与组合
 
-**覆盖**：最低公共层级、组合插槽、禁止重复 State、Context 边界、模块隔离。
+**覆盖**：最低公共层级、页面共置、提取边界、组合插槽、禁止重复 State、Context 边界、模块隔离。
 
 - ❌ 同时存储 `firstName`、`lastName` 和 `fullName`，再用 Effect 同步。
 - ✅ 只存储可编辑字段，渲染时计算 `fullName`。
+- ✅ `src/auth/pages/Login.tsx` 可以直接维护页面专属的提交状态和处理函数；没有独立生命周期时，不为减少页面行数创建 `useLogin`。
+- ✅ 页面中的订阅后来形成取消、重连和过期结果处理时，再提取职责明确的 Hook；单一调用方不会阻止这条真实边界。
 - ❌ 为标题是否展开创建全局 Context，或让认证组件读取聊天页内部 store。
 - ✅ 展开状态留在所属组件；主题、语言、认证等稳定跨层状态才进入职责明确的 Context。
 - ✅ 布局差异通过 `children` 或具名插槽组合；行为完全不同的模式拆为不同组件，不叠加大量布尔 Props。

@@ -5,28 +5,16 @@ import enUSCommon from "@/i18n/resources/en-US/common.json"
 import zhCNAuth from "@/i18n/resources/zh-CN/auth.json"
 import zhCNCommon from "@/i18n/resources/zh-CN/common.json"
 import {
+  canonicalizeDetectedLocale,
   DEFAULT_LOCALE,
   LANGUAGE_STORAGE_KEY,
-  normalizeLocale,
   SUPPORTED_LOCALES,
 } from "@/i18n/locale"
 
-/**
- * 应用翻译命名空间。
- *
- * @readonly
- * @public
- * @since 1.0.0
- */
+/** 应用翻译命名空间；新增值时必须同步所有支持语言的资源。 */
 export const NAMESPACES = ["common", "auth"] as const
 
-/**
- * 默认翻译命名空间。
- *
- * @readonly
- * @public
- * @since 1.0.0
- */
+/** 未显式指定命名空间时使用的默认命名空间。 */
 export const DEFAULT_NAMESPACE = "common" as const
 
 /**
@@ -35,10 +23,6 @@ export const DEFAULT_NAMESPACE = "common" as const
  * @remarks
  * 当前采用同步打包资源；未来切换按需加载时只需替换资源加载方式，组件仍按
  * namespace 使用翻译键。
- *
- * @readonly
- * @public
- * @since 1.0.0
  */
 export const RESOURCES = {
   "en-US": {
@@ -55,21 +39,16 @@ export const RESOURCES = {
  * i18next 初始化配置。
  *
  * @remarks
- * URL 查询参数 `lng` 优先用于预览指定语言；用户显式偏好、浏览器语言和
- * HTML 默认语言依次作为后续检测来源。自动检测结果不会直接写入本地存储。
- *
- * @readonly
- * @public
- * @since 1.0.0
+ * 检测顺序固定为合法用户偏好、浏览器支持语言和项目默认语言。自动检测结果
+ * 不写入本地存储，只有用户显式选择才会持久化。
  */
 export const I18N_CONFIG = {
   defaultNS: DEFAULT_NAMESPACE,
   detection: {
     caches: [],
-    convertDetectedLanguage: normalizeLocale,
+    convertDetectedLanguage: canonicalizeDetectedLocale,
     lookupLocalStorage: LANGUAGE_STORAGE_KEY,
-    lookupQuerystring: "lng",
-    order: ["querystring", "localStorage", "navigator", "htmlTag"],
+    order: ["localStorage", "navigator"],
   },
   fallbackLng: DEFAULT_LOCALE,
   initAsync: false,

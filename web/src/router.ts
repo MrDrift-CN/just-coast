@@ -1,21 +1,13 @@
 import { createBrowserRouter } from "react-router"
 
 import {
-  ForgetRoute,
+  ForgotPasswordRoute,
   LoginRedirect,
   LoginRoute,
   RegisterRoute,
-} from "@/auth/routes"
+} from "@/auth"
 
-/**
- * 浏览器路由。
- *
- * @remarks
- * 路由实例在 React 树外只创建一次。业务路由适配组件由对应业务模块维护。
- *
- * @public
- * @since 1.0.0
- */
+/** 路由实例只创建一次，各业务模块维护自己的路由适配组件。 */
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -31,7 +23,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/forget",
-    Component: ForgetRoute,
+    Component: ForgotPasswordRoute,
   },
   {
     path: "*",

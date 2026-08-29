@@ -11,40 +11,25 @@ import {
 
 import "@/auth/styles.css"
 
-/**
- * 认证页面公共外壳属性。
- *
- * @public
- * @since 1.0.0
- */
+/** 认证页面通用外壳的内容插槽。 */
 export interface AuthShellProps {
-  /** 页面右上角的辅助操作。 */
+  /** 页面外壳之外的辅助操作，例如语言切换。 */
   actions?: ReactNode
 
-  /** 页面标题。 */
+  /** 认证场景的页面主标题。 */
   title: string
 
-  /** 页面说明。 */
+  /** 主标题下方的场景说明。 */
   description: string
 
-  /** 页面表单内容。 */
+  /** 当前认证场景的表单内容。 */
   children: ReactNode
 
-  /** 卡片底部的辅助操作。 */
+  /** 表单下方的场景导航内容。 */
   footer: ReactNode
 }
 
-/**
- * 渲染统一的认证背景与液态玻璃卡片。
- *
- * @param props - 认证页面公共外壳属性。
- * @returns 认证页面布局。
- *
- * @remarks
- * 背景、卡片和控件外观只消费主题语义令牌，不持有登录或会话逻辑。
- * @public
- * @since 1.0.0
- */
+/** 只提供认证页面布局和主题样式，不持有认证状态或流程。 */
 export function AuthShell({
   actions,
   title,

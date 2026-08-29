@@ -14,6 +14,12 @@
 - **状态层**：管理加载、缓存、重试和界面状态。
 - **组件层**：触发操作并渲染结果，不解析协议细节。
 
+这些层级表达责任边界，不要求每个请求都建立完整文件链。只创建当前实现确实需要的层；简单页面可以直接调用服务函数，只有出现独立 React 请求生命周期时才增加 Hook。
+
+- 即使只有一个调用方，服务仍可因隔离真实 HTTP、第三方 SDK、序列化、响应校验或错误语义而独立存在。
+- 禁止为猜测中的未来接入创建只转发参数、改名返回值、忽略输入或直接 `Promise.resolve()` 的空壳服务与适配器。
+- `pending`、页面导航、Toast、翻译和 JSX 属于 React 或产品交互层，不得为了“分层完整”移入服务。
+
 组件不得重复实现状态码判断、鉴权头、JSON 解析和错误归一化。
 
 ## 请求函数
@@ -80,17 +86,21 @@
 
 ### 案例：请求职责逐层收窄
 
-**覆盖**：传输、服务、适配、状态和组件层，以及禁止组件解析协议。
+**覆盖**：传输、服务、适配、状态和组件层，按需分层，单一调用方服务，禁止空壳边界，以及禁止组件解析协议。
 
 ```text
-transport/request.ts       基础 URL、headers、超时、取消、响应读取
-auth/authService.ts        login、getCurrentUser 等业务动作
-auth/authAdapter.ts        AuthSessionDto -> AuthSession
-auth/hooks/useLogin.ts     loading、error、重复提交和取消
-auth/components/LoginForm.tsx 触发提交并渲染状态
+transport/request.ts          基础 URL、headers、超时、取消、响应读取
+auth/service.ts               login、getCurrentUser 等真实业务请求
+auth/pages/Login.tsx          页面专属提交状态并调用 service
+auth/components/LoginForm.tsx 渲染字段并触发页面动作
+auth/sessionAdapter.ts        [按需] 非平凡 DTO -> 领域模型转换
+auth/hooks/useLogin.ts        [按需] 独立的取消、竞态、错误和会话生命周期
 ```
 
-`LoginForm` 不应重复判断 401、拼 Authorization、调用 `response.json()` 或理解 DTO 字段名。
+上图是职责地图，不是必须补齐的文件模板。简单登录流程可以由页面直接调用 `auth/service.ts`；只有对应职责真实存在时才添加适配器或 Hook；`LoginForm` 不应重复判断 401、拼 Authorization、调用 `response.json()` 或理解 DTO 字段名。
+
+- ❌ 为尚未接入的邮件服务创建忽略参数并返回固定 `Promise.resolve()` 的 `requestPasswordResetEmail`，再增加 Hook 包装该空壳。
+- ✅ 静态预览行为先与唯一页面或演示适配器共置；真实接口出现后，再由服务隔离请求协议与错误语义。
 
 ### 案例：完整处理 `fetch` 响应
 

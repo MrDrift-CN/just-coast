@@ -103,17 +103,17 @@
 ✅ src/components/assistant-ui/thread.tsx        官方聊天原语
 ✅ src/components/ConfirmActionDialog.tsx        跨功能共享的自有组合
 ✅ src/auth/components/LoginForm.tsx             认证功能组件
-✅ src/auth/pages/LoginPage.tsx                  页面编排
+✅ src/auth/pages/Login.tsx                      页面编排
 ```
 
-- ❌ 让 `components/ui/button.tsx` 导入 `auth/pages/LoginPage.tsx`。
-- ✅ `LoginPage` 组合 `LoginForm`，`LoginForm` 再使用 `Button`；低层组件不知道页面和认证流程。
+- ❌ 让 `components/ui/button.tsx` 导入 `auth/pages/Login.tsx`。
+- ✅ `Login` 组合 `LoginForm`，`LoginForm` 再使用 `Button`；低层组件不知道页面和认证流程。
 
 ### 案例：什么时候提取组件
 
 **覆盖**：单一职责、页面只编排、有意义提取、禁止机械拆分、万能组件和猜测性 API。
 
-- ❌ `LoginPage` 同时处理请求协议、密码显隐、Toast、路由跳转和 200 行低层表单 JSX。
+- ❌ `Login` 同时处理请求协议、密码显隐、Toast、路由跳转和 200 行低层表单 JSX。
 - ✅ 页面组合 `LoginForm`；`useLogin` 管理提交职责；`PasswordField` 封装独立的密码交互语义。
 - ❌ 为一个只出现一次的 `<span>` 创建 `LoginTextAtom`，或创建带 25 个模式 Props 的 `UniversalPanel`。
 - ✅ 只有 JSX 具备独立语义、状态、稳定复用或能显著降低复杂度时提取；API 只支持当前登录需求。

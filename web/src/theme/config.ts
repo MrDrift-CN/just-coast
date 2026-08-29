@@ -9,14 +9,20 @@ import type {
   ThemePalettePatch,
 } from "@/theme/types"
 
-/** 主题配置的本地存储键。 */
-export const THEME_STORAGE_KEY = "just-coast.theme"
-
+/** 浅色和深色主题共用的品牌主色。 */
 const LIGHT_PRIMARY = "oklch(0.7487 0.2019 149.77)"
+
+/** 品牌主色背景上使用的前景色。 */
 const PRIMARY_FOREGROUND = "oklch(0.18 0.035 150)"
+
+/** 应用正文与标题默认使用的字体栈。 */
 const DEFAULT_BODY_FONT = "'Geist Variable', sans-serif"
+
+/** 代码和等宽内容默认使用的跨平台字体栈。 */
 const DEFAULT_MONO_FONT =
   "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+
+/** 浅色和深色主题共用的装饰渐变默认值。 */
 const DEFAULT_GRADIENT = {
   start: "color-mix(in oklab, var(--background) 88%, var(--primary))",
   middle: "color-mix(in oklab, var(--background) 90%, var(--accent))",
@@ -133,9 +139,20 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
   },
 }
 
-const THEME_MODES: ThemeMode[] = ["light", "dark", "system"]
-const MOTION_PREFERENCES: MotionPreference[] = ["system", "reduce", "full"]
-const DIFF_MARKER_STYLES: DiffMarkerStyle[] = ["color", "sign"]
+/** 主题模式的运行时白名单。 */
+const THEME_MODES: readonly ThemeMode[] = ["light", "dark", "system"]
+
+/** 动效偏好的运行时白名单。 */
+const MOTION_PREFERENCES: readonly MotionPreference[] = [
+  "system",
+  "reduce",
+  "full",
+]
+
+/** 差异标记样式的运行时白名单。 */
+const DIFF_MARKER_STYLES: readonly DiffMarkerStyle[] = ["color", "sign"]
+
+/** 主语义色板允许从不可信数据读取的字段。 */
 const PALETTE_KEYS = [
   "background",
   "foreground",
@@ -157,8 +174,14 @@ const PALETTE_KEYS = [
   "input",
   "ring",
 ] as const
+
+/** 图表色板允许从不可信数据读取的字段。 */
 const CHART_KEYS = ["chart1", "chart2", "chart3", "chart4", "chart5"] as const
+
+/** 装饰渐变允许从不可信数据读取的字段。 */
 const GRADIENT_KEYS = ["start", "middle", "end", "glow"] as const
+
+/** 侧边栏色板允许从不可信数据读取的字段。 */
 const SIDEBAR_KEYS = [
   "background",
   "foreground",
@@ -170,10 +193,12 @@ const SIDEBAR_KEYS = [
   "ring",
 ] as const
 
+/** 判断未知输入是否为可以按字段读取的普通对象。 */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
+/** 判断未知输入是否为长度受限且不能注入额外 CSS 声明的值。 */
 function isSafeCssValue(value: unknown): value is string {
   return (
     typeof value === "string" &&
@@ -183,16 +208,18 @@ function isSafeCssValue(value: unknown): value is string {
   )
 }
 
+/** 将有限数值约束到允许范围，无效输入回退到既有值。 */
 function normalizeNumber(
   value: unknown,
   fallback: number,
   minimum: number,
   maximum: number
-) {
+): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback
   return Math.min(maximum, Math.max(minimum, value))
 }
 
+/** 从运行时白名单中选择字符串，无效输入回退到既有值。 */
 function normalizeChoice<T extends string>(
   value: unknown,
   choices: readonly T[],
@@ -203,6 +230,20 @@ function normalizeChoice<T extends string>(
   return value as T
 }
 
+/** 将一个白名单字段转换为规范化 CSS 键值对。 */
+function normalizeCssEntry<T extends object>(
+  source: Record<string, unknown>,
+  fallback: T,
+  key: keyof T
+): [keyof T, string] {
+  const candidate = source[String(key)]
+  return [
+    key,
+    isSafeCssValue(candidate) ? candidate.trim() : String(fallback[key]),
+  ]
+}
+
+/** 按显式字段白名单规范化一组 CSS 值。 */
 function normalizeCssValues<T extends object>(
   value: unknown,
   fallback: T,
@@ -210,16 +251,11 @@ function normalizeCssValues<T extends object>(
 ): T {
   const source = isRecord(value) ? value : {}
   return Object.fromEntries(
-    keys.map((key) => {
-      const candidate = source[String(key)]
-      return [
-        key,
-        isSafeCssValue(candidate) ? candidate.trim() : String(fallback[key]),
-      ]
-    })
+    keys.map((key) => normalizeCssEntry(source, fallback, key))
   ) as T
 }
 
+/** 将未知色板补全并约束为一套可安全应用的语义色板。 */
 function normalizePalette(
   value: unknown,
   fallback: ThemePalette
@@ -237,6 +273,7 @@ function normalizePalette(
   }
 }
 
+/** 深复制一套包含嵌套对象的主题色板。 */
 function clonePalette(palette: ThemePalette): ThemePalette {
   return {
     ...palette,
@@ -246,6 +283,7 @@ function clonePalette(palette: ThemePalette): ThemePalette {
   }
 }
 
+/** 深层合并一套局部色板更新。 */
 function mergePalette(
   current: ThemePalette,
   patch?: ThemePalettePatch

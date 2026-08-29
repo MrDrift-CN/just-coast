@@ -15,11 +15,13 @@
 
 自有源码文件必须使用驼峰命名：
 
-- React 组件、页面和 Error Boundary 使用大驼峰，例如 `LoginPage.tsx`、`PasswordField.tsx`。
-- Hook、工具、服务、配置模块和普通脚本使用小驼峰，例如 `useTheme.ts`、`formatMessage.ts`、`authService.ts`。
+- React 组件、页面和 Error Boundary 使用大驼峰，例如 `Login.tsx`、`PasswordField.tsx`。
+- Hook、工具、服务、配置模块和普通脚本使用小驼峰，例如 `useTheme.ts`、`formatMessage.ts`、`service.ts`。
 - 测试文件沿用被测文件名，例如 `PasswordField.test.tsx`。
-- 类型声明文件使用小驼峰，例如 `authTypes.ts`；全局声明可使用约定文件名 `vite-env.d.ts`。
+- 类型声明文件使用小驼峰，例如功能目录中的 `types.ts`；全局声明可使用约定文件名 `vite-env.d.ts`。
 - barrel 文件可以使用 `index.ts`，但不得为了缩短导入路径而创建层层 barrel。
+- 文件名不得重复当前直接目录的名称或该目录已经明确提供的职责语义，不得添加无信息量的前缀或后缀。例如使用 `auth/service.ts`、`auth/types.ts`、`auth/pages/Login.tsx`，禁止使用 `auth/authService.ts`、`auth/authTypes.ts`、`auth/pages/LoginPage.tsx`。
+- 只有目录不能提供足够上下文时，文件名才补充必要职责。例如共享目录使用 `lib/mergeHeaders.ts`，不能把不明确的 `lib/service.ts` 当作通用名称。
 
 `components/ui` 和 `components/assistant-ui` 中的官方源码保留原文件名，不执行驼峰重命名。
 
@@ -51,6 +53,10 @@
 - 优先使用提前返回降低嵌套层级。
 - 禁止嵌套三元表达式；复杂条件应拆为具名变量、分支或独立函数。
 - 避免隐式副作用。修改外部状态、读写存储或发起请求的函数应通过名称和调用位置体现副作用。
+- 默认将只服务同一页面、组件或功能流程且具有相同变化原因的代码共置在最近的拥有者中；不得先按 Hook、Service、工具或类型等类别机械建文件，再为文件寻找职责。
+- 只有边界能够隔离独立的外部协议、React 状态与生命周期、稳定共享语义、业务不变量，或可独立替换和验证的契约时才提取。多处调用本身不证明语义相同；单一调用方也不否定真实外部边界。
+- 文件行数、函数数量、目录示例和猜测中的未来复用不能单独作为拆分依据。页面和组件可以直接拥有其专属状态、事件处理、简单解析与流程编排。
+- 如果抽象只转发参数、重命名返回值，或包装另一层却没有增加规则、状态、清理、错误语义或协议隔离，应删除该抽象并内聚回调用方。
 - 不得实现当前需求之外的抽象、参数或扩展点。
 - 重复代码只有在共享语义已经稳定时才提取；相似外形不等于相同职责。
 - 删除废弃代码，不使用注释长期保留旧实现。
@@ -68,6 +74,8 @@
 
 - 注释主要解释“为什么”、限制条件、兼容原因和非显然风险，不重复描述代码字面行为。
 - 如果代码需要长篇注释才能说明流程，应先尝试简化代码。
+- 每个自有具名函数、数据模型及其字段、模块级常量都必须使用 TSDoc 说明职责、业务语义或维护约束；公开和私有声明采用同一覆盖标准。
+- 普通局部变量、单表达式匿名内联回调和 `index.ts` 纯重导出不要求重复文档；完整边界和写法必须读取 `comments.md`。
 - `TODO` 必须说明待办事项和触发条件；能够关联任务时应附内部任务标识。
 - 修改行为、配置、构建或使用方式时，必须同步更新仓库内相关文档。
 - 禁止在源代码和生效规则中保留可能与项目结论冲突的外部规范链接。
@@ -101,24 +109,32 @@
 
 ### 案例：自有文件与上游文件命名
 
-**覆盖**：组件、Hook、服务、类型、测试、barrel 命名，以及存量迁移和上游例外。
+**覆盖**：组件、页面、Hook、服务、类型、测试、barrel 命名，目录语义去重，以及存量迁移、共享目录和上游例外。
 
 ```text
 ❌ src/auth/components/password-field.tsx        新增自有组件继续使用短横线
+❌ src/auth/pages/LoginPage.tsx                   pages 已提供页面语义
+❌ src/auth/authService.ts                       auth 前缀重复当前功能目录
+❌ src/auth/authTypes.ts                         auth 前缀重复当前功能目录
+❌ src/auth/hooks/useLoginHook.ts                 hooks 已提供 Hook 语义
 ❌ src/auth/helpers.ts                           职责模糊
 ❌ src/auth/index/index.ts                       层层 barrel
 
 ✅ src/auth/components/PasswordField.tsx
+✅ src/auth/pages/Login.tsx
 ✅ src/auth/hooks/useLogin.ts
-✅ src/auth/authService.ts
-✅ src/auth/authTypes.ts
+✅ src/auth/service.ts
+✅ src/auth/types.ts
 ✅ src/auth/components/PasswordField.test.tsx
+✅ src/lib/mergeHeaders.ts                        共享目录需要补足具体职责
 
 ✅ src/components/ui/alert-dialog.tsx             保留官方文件名
 ✅ src/components/assistant-ui/thread.tsx          保留官方文件名
 ```
 
 已有 `password-field.tsx` 只有在相关功能修改或独立重构中才原子迁移为 `PasswordField.tsx`，并同步更新全部导入；不得顺手批量重命名整个 `auth` 目录。
+
+以上示例只裁决已经成立的文件应如何命名；是否应创建 `useLogin.ts`、`service.ts` 或 `types.ts`，仍须按“代码组织”的真实边界判断。
 
 ### 案例：能够表达职责的标识符
 
@@ -150,14 +166,14 @@ interface LoginFormProps {
 ```ts
 // ❌ 相对导入、越层读取内部实现、值导入类型
 import { normalizeSession } from "../../auth/internal/sessionAdapter";
-import { AuthSession } from "../auth/authTypes";
+import { AuthSession } from "../auth/types";
 
 // ✅ 从稳定边界导入，类型使用 import type
 import { normalizeSession } from "@/auth";
 import type { AuthSession } from "@/auth";
 
 // ✅ 只有代码分割确有需要时动态导入静态路径
-const SettingsPage = lazy(() => import("@/settings/pages/SettingsPage"));
+const Settings = lazy(() => import("@/settings/pages/Settings"));
 ```
 
 如果 `auth` 公开入口重新导出 `chat`，而 `chat` 又导入 `auth`，应调整职责或提取共享模块；不能再增加一层 barrel 或用延迟导入隐藏循环。
@@ -193,6 +209,16 @@ async function loginAccount(account: Account) {
 
 两个表单当前只有 JSX 外形相似、校验语义不同，就先保留各自实现；当字段、错误和交互契约稳定一致后再提取共享组件。废弃实现直接删除，由 Git 历史追溯，不用注释保留。
 
+### 案例：先共置再按真实边界提取
+
+**覆盖**：最近拥有者、独立变化原因、有效提取条件、非行数驱动、拒绝薄包装，以及单一调用方的边界。
+
+- ✅ 登录页专属的 `pending`、提交处理和短小表单读取可以先留在 `src/auth/pages/Login.tsx`；页面变长不自动要求创建 Hook 或工具文件。
+- ❌ `useLogin` 只调用 `useAuthAction`，把 `execute` 改名为 `login` 后原样返回；这没有隐藏新的状态、规则或生命周期，应由页面直接使用 `useAuthAction` 或保留局部逻辑。
+- ✅ 当登录流程真正拥有取消、过期响应、结构化错误、会话更新等独立生命周期时，可以提取 `useLogin`，即使当前只有一个页面调用。
+- ✅ 隔离真实 HTTP、存储或第三方协议的适配器可以只有一个调用方；其价值来自隔离外部变化，而不是调用次数。
+- ❌ 不能因为目录示例出现 `hooks/`、`service.ts` 或 `formParsers.ts`，就在没有对应职责时补齐这些文件。
+
 ### 案例：可恢复错误与浏览器能力
 
 **覆盖**：异常不可静默、结构化处理、国际化反馈、浏览器能力检查、日志脱敏、受控忽略。
@@ -224,7 +250,7 @@ UI 根据结果展示国际化提示。只有能够证明失败无害时才允�
 
 ### 案例：有价值的注释和同步文档
 
-**覆盖**：解释原因、简化复杂流程、可执行 TODO、同步仓库文档、禁止在生效规则中保留外部规范链接。
+**覆盖**：解释原因、强制文档覆盖及其例外、简化复杂流程、可执行 TODO、同步仓库文档、禁止在生效规则中保留外部规范链接。
 
 ```ts
 // ❌ 获取语言
@@ -233,8 +259,30 @@ const locale = readLocale();
 // ✅ 旧键只保留一个发布周期；全部活跃用户完成迁移后删除兼容读取。
 const locale = readLocaleWithLegacyFallback();
 
+/** 登录密码的最少字符数；表单约束与请求校验必须复用此值。 */
+const PASSWORD_MIN_LENGTH = 8;
+
+/** 浏览器校验通过后的登录字段。 */
+interface LoginFormValues {
+  /** 用于认证并接收账号通知的邮箱地址。 */
+  email: string;
+
+  /** 尚未加密传输前的原始密码，不得写入日志或持久化。 */
+  password: string;
+}
+
+/** 从原生表单中读取登录字段，缺失或非文本值按空字符串处理。 */
+function parseLoginFormData(formData: FormData): LoginFormValues {
+  return {
+    email: String(formData.get("email") ?? ""),
+    password: String(formData.get("password") ?? ""),
+  };
+}
+
 // TODO(JC-142): 后端返回稳定 errorCode 后移除临时状态码映射。
 ```
+
+`parseLoginFormData` 内的普通局部变量不因使用 `const` 就强制添加文档；`items.map((item) => item.id)` 这类单表达式匿名回调也不单独写 TSDoc。具名私有函数仍必须写文档，复杂匿名回调必须提取为具名函数。`index.ts` 的纯重导出在来源声明处维护唯一文档。
 
 如果主题持久化方式改变，代码、`src/theme/README.md`、迁移说明和相关测试应在同一变更中更新。外部资料只用于研究，不写入生效规则作为运行时裁决来源。
 
