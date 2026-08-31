@@ -25,6 +25,15 @@
 - 不得创建没有稳定复用场景的“万能组件”。
 - 组件 API 只覆盖当前明确需求，不预留猜测性的扩展参数。
 
+## 组件命名
+
+- 自有组件名称只要包含 `Form`、`Button`、`Field` 结构分类词，就使用“结构分类 + 业务语义”词序：`FormLogin`、`ButtonLanguage`、`FieldPassword`。
+- 文件名按同一词序转为 kebab-case：`form-login.tsx`、`button-language.tsx`、`field-password.tsx`。
+- 组件专属契约与主组件保持同一前缀，例如 `FormLoginProps`、`FormLoginValues`、`FieldPasswordProps`。
+- 只有名称确实需要表达对应结构职责时才添加前缀。一组按钮应按组合职责命名，不得为了排序冒充 `Button`。
+- 本规则只约束组件身份、组件文件和组件专属契约；普通函数、变量与领域模型继续按自然业务语序命名，例如 `parseLoginFormData()`，不得机械改成 `parseFormLoginData()`。
+- `Provider`、`Dialog`、`Shell` 等其他组件继续按已成立的 React 和业务语义命名；本规则不将所有组件类型机械倒置。
+
 ## Props 契约
 
 - Props 名称必须描述业务含义，而不是内部样式实现。
@@ -101,20 +110,20 @@
 ```text
 ✅ src/components/ui/button.tsx                  官方基础组件
 ✅ src/components/assistant-ui/thread.tsx        官方聊天原语
-✅ src/components/ConfirmActionDialog.tsx        跨功能共享的自有组合
-✅ src/auth/components/LoginForm.tsx             认证功能组件
-✅ src/auth/pages/Login.tsx                      页面编排
+✅ src/components/confirm-action-dialog.tsx      跨功能共享的自有组合
+✅ src/auth/components/form-login.tsx            认证功能组件
+✅ src/auth/pages/login.tsx                      页面编排
 ```
 
-- ❌ 让 `components/ui/button.tsx` 导入 `auth/pages/Login.tsx`。
-- ✅ `Login` 组合 `LoginForm`，`LoginForm` 再使用 `Button`；低层组件不知道页面和认证流程。
+- ❌ 让 `components/ui/button.tsx` 导入 `auth/pages/login.tsx`。
+- ✅ `Login` 组合 `FormLogin`，`FormLogin` 再使用 `Button`；低层组件不知道页面和认证流程。
 
 ### 案例：什么时候提取组件
 
 **覆盖**：单一职责、页面只编排、有意义提取、禁止机械拆分、万能组件和猜测性 API。
 
 - ❌ `Login` 同时处理请求协议、密码显隐、Toast、路由跳转和 200 行低层表单 JSX。
-- ✅ 页面组合 `LoginForm`；`useLogin` 管理提交职责；`PasswordField` 封装独立的密码交互语义。
+- ✅ 页面组合 `FormLogin`；`useLogin` 管理提交职责；`FieldPassword` 封装独立的密码交互语义。
 - ❌ 为一个只出现一次的 `<span>` 创建 `LoginTextAtom`，或创建带 25 个模式 Props 的 `UniversalPanel`。
 - ✅ 只有 JSX 具备独立语义、状态、稳定复用或能显著降低复杂度时提取；API 只支持当前登录需求。
 
@@ -145,19 +154,19 @@ type NoticeProps =
 
 ```tsx
 <AuthShell title={t("login.title")} footer={<RegisterLink />}>
-  <LoginForm />
+  <FormLogin />
 </AuthShell>
 ```
 
 - ❌ 复制一份 `Card` 实现只为换标题位置，或让 `AuthShell` 通过 `isLogin`、`isRegister`、`isReset` 控制三套无关流程。
-- ✅ 外观差异使用有限 `variant`；流程差异明显时使用 `LoginForm`、`RegisterForm` 等独立组件。
+- ✅ 外观差异使用有限 `variant`；流程差异明显时使用 `FormLogin`、`FormRegister` 等独立组件。
 - ✅ 包装 Dialog 时只暴露产品允许的 `open`、`onOpenChange` 和内容插槽，不机械透传所有内部 Props。
 
 ### 案例：状态只有一个拥有者
 
 **覆盖**：展示组件、瞬时状态、协调/路由/持久化状态、禁止双份事实、完整受控与明确非受控契约。
 
-- ✅ `PasswordField` 可以内部维护“是否显示密码”，因为只影响自身瞬时 UI。
+- ✅ `FieldPassword` 可以内部维护“是否显示密码”，因为只影响自身瞬时 UI。
 - ✅ 登录完成后的跳转目标属于路由状态，由路由或页面拥有。
 - ❌ 父组件传 `value`，子组件又把它复制到内部 State 并各自更新。
 - ✅ 受控字段接收 `value` 和 `onChange`；非受控字段只接收 `defaultValue` 并明确不响应后续默认值变化。
@@ -221,4 +230,4 @@ Tooltip、Toast、`alt` 和 ARIA 文案同样来自资源。布局不得用固�
 
 - ❌ 运行组件更新命令覆盖整个 `components/ui`，没有检查本地差异。
 - ✅ 更新前查看差异；通过自有包装、Props、插槽和主题变量完成定制。
-- 边界：直接修改官方源码时只改目标所需行并记录原因。若长期深改到无法安全更新，则迁出上游目录、改为大驼峰自有组件并承担完整维护责任。
+- 边界：直接修改官方源码时只改目标所需行并记录原因。若长期深改到无法安全更新，则迁出上游目录、按 kebab-case 命名自有文件并承担完整维护责任。

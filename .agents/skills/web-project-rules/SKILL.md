@@ -53,7 +53,9 @@ Common combinations:
 ## Non-negotiable project invariants
 
 - Use `@/` for internal imports and keep dependency direction consistent with the directory rules.
-- Use camel-style names for owned files: PascalCase for React components and pages, lowerCamelCase for Hooks, utilities, services, stores, and other modules. Do not repeat the direct directory name or its established responsibility as a filename prefix or suffix. Preserve official filenames only inside the two upstream/generated component directories.
+- Use lowercase kebab-case for owned source files and directories. Custom Hook files are the only source-file exception: use lowerCamelCase and match the exported Hook name. Preserve ecosystem-defined entry/configuration names and untouched upstream/generated filenames. Do not repeat the direct directory name or its established responsibility as a filename prefix or suffix.
+- When an owned component name contains the structural classifier `Form`, `Button`, or `Field`, put that classifier before the business meaning in both the PascalCase export and kebab-case filename: `FormLogin`/`form-login.tsx`, `ButtonLanguage`/`button-language.tsx`, and `FieldPassword`/`field-password.tsx`. Mirror the order in component-coupled contracts, but do not mechanically reorder normal function, variable, or domain-model phrases such as `parseLoginFormData`.
+- Every function declared with the `function` keyword must start with a lowercase letter. Declare owned PascalCase React components and pages as `const` arrow functions; do not use `function PascalCase()` or `React.FC`.
 - Use semantic design tokens and existing theme primitives; do not hard-code a parallel visual system.
 - Internationalize user-visible text and preserve locale-aware formatting.
 - Do not weaken TypeScript, linting, accessibility, security, or validation controls to make a change pass.

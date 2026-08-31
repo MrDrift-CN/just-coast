@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router"
 
 import {
-  ForgotPasswordRoute,
+  GithubCallbackRoute,
   LoginRedirect,
   LoginRoute,
+  QrLoginConfirmationRoute,
   RegisterRoute,
 } from "@/auth"
 
@@ -23,7 +24,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/forget",
-    Component: ForgotPasswordRoute,
+    Component: LoginRoute,
+  },
+  {
+    path: "/auth/github/callback",
+    Component: GithubCallbackRoute,
+  },
+  {
+    path: "/auth/qr-confirm",
+    Component: QrLoginConfirmationRoute,
   },
   {
     path: "*",

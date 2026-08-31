@@ -39,6 +39,7 @@ const PALETTE_PROPERTIES = [
   ["--accent-foreground", "accentForeground"],
   ["--destructive", "destructive"],
   ["--destructive-foreground", "destructiveForeground"],
+  ["--success", "success"],
   ["--border", "border"],
   ["--input", "input"],
   ["--ring", "ring"],

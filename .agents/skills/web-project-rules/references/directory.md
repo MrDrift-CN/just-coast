@@ -19,8 +19,8 @@ web/
 │   ├── style/              跨页面全局排版与样式能力
 │   ├── theme/              主题配置、令牌和样式
 │   ├── chat/               聊天功能模块
-│   ├── <featureName>/      按业务能力组织的功能模块
-│   ├── App.tsx             应用组合入口
+│   ├── <feature-name>/     按业务能力组织的功能模块
+│   ├── app.tsx             应用组合入口
 │   ├── router.ts           路由定义入口
 │   └── main.tsx            浏览器启动入口
 ├── eslint.config.js
@@ -32,14 +32,14 @@ web/
 
 ## 功能模块
 
-功能模块使用小驼峰目录名，例如：
+功能模块使用全小写 kebab-case 目录名，例如：
 
 ```text
 src/auth/
 ├── components/             按需：形成独立 UI 契约
 ├── hooks/                  按需：形成独立 React 生命周期
 ├── pages/
-├── formParsers.ts          按需：形成稳定共享的表单转换
+├── form-parsers.ts         按需：形成稳定共享的表单转换
 ├── index.ts
 ├── routes.tsx
 ├── service.ts              按需：隔离真实外部协议
@@ -47,7 +47,7 @@ src/auth/
 └── types.ts
 ```
 
-- 该树只展示可能出现的位置，不要求补齐每一项；没有对应职责时应省略 `components/`、`hooks/`、`formParsers.ts`、`service.ts` 或 `types.ts`。
+- 该树只展示可能出现的位置，不要求补齐每一项；没有对应职责时应省略 `components/`、`hooks/`、`form-parsers.ts`、`service.ts` 或 `types.ts`。
 - 只创建实际需要的子目录，不建立空目录。
 - 功能私有组件、Hook、服务和类型保留在功能目录内。
 - 只有被多个功能稳定复用且不依赖具体业务时才提升到共享目录。
@@ -55,13 +55,15 @@ src/auth/
 
 ## 文件命名
 
-- 自有 React 组件和页面文件使用大驼峰。
-- 自有 Hook、服务、工具、类型和样式文件使用小驼峰。
-- 文件名不得重复当前直接目录的名称或该目录已经提供的职责语义，例如 `auth/service.ts`、`auth/pages/Login.tsx`，禁止 `auth/authService.ts`、`auth/pages/LoginPage.tsx`。
-- 职责明确的功能目录可以使用 `service.ts`、`types.ts` 等作用域内名称；共享目录必须使用 `mergeHeaders.ts` 等能够独立说明职责的名称。
+- 自有源码、页面、组件、服务、工具、类型和样式文件统一使用全小写 kebab-case。
+- 表单、按钮和字段组件分别使用 `form-`、`button-`、`field-` 文件前缀，并与 `FormXxx`、`ButtonXxx`、`FieldXxx` 主导出词序一致。
+- 自定义 Hook 文件使用小驼峰并与导出 Hook 同名，例如 `useAccountSettings.ts`；不使用 `use-account-settings.ts`。
+- 文件名不得重复当前直接目录的名称或已提供的职责语义，例如 `auth/service.ts`、`auth/pages/login.tsx`，禁止 `auth/auth-service.ts`、`auth/pages/login-page.tsx`。
+- 职责明确的功能目录可以使用 `service.ts`、`types.ts` 等作用域内名称；共享目录必须使用 `merge-headers.ts` 等能够独立说明职责的名称。
 - 测试文件与被测文件同名并追加 `.test` 或 `.spec`。
 - `components/ui` 和 `components/assistant-ui` 保持官方命名，不重命名。
-- URL 路径使用小写短横线形式；URL 命名不决定源码文件命名。
+- URL 路径和自有源码文件都使用小写短横线形式，但两者仍按各自语义命名，不要求字面相同。
+- `index.ts`、`main.tsx`、`vite-env.d.ts`、`*.config.*` 和 `tsconfig*.json` 等生态约定保留固定名称。
 - 禁止使用 `common.ts`、`helpers.ts`、`misc.ts` 等无法表达职责的模糊文件名。
 
 ## 页面和组件位置
@@ -113,20 +115,20 @@ src/auth/
 
 - 需求：新增账户设置页面。
 - ❌ 先把所有现有 `auth`、`theme`、`i18n` 文件移动到一套全新架构，再开始功能开发。
-- ✅ 新建 `src/accountSettings/`，先只包含当前需要的页面和组件；Hook 与服务分别在独立生命周期和真实外部协议出现后创建，`App.tsx`、`router.ts`、`main.tsx` 继续承担既有入口职责。
+- ✅ 新建 `src/account-settings/`，先只包含当前需要的页面和组件；Hook 与服务分别在独立生命周期和真实外部协议出现后创建，`app.tsx`、`router.ts`、`main.tsx` 继续承担既有入口职责。
 
 `public` 保存原样公开资源，`src/style` 保存跨页面排版，`src/theme` 保存主题基础能力；不能因为目录树“更整齐”互换职责。
 
 ### 案例：功能私有优先，稳定复用后提升
 
-**覆盖**：小驼峰功能目录、按需子目录、功能私有内容、共享提升条件、模块公开边界。
+**覆盖**：kebab-case 功能目录、按需子目录、功能私有内容、共享提升条件、模块公开边界。
 
 ```text
-src/accountSettings/
+src/account-settings/
 ├── components/
-│   └── ProfileForm.tsx
+│   └── form-profile.tsx
 ├── pages/
-│   └── Overview.tsx
+│   └── overview.tsx
 ├── hooks/                  按需：复杂保存生命周期出现后创建
 │   └── useProfileUpdate.ts
 └── service.ts              按需：真实账户 API 接入后创建
@@ -134,35 +136,35 @@ src/accountSettings/
 
 - ❌ 预先创建空的 `stores/`、`models/`、`adapters/` 和 `utils/`。
 - ✅ 只创建已有文件需要的目录。
-- ✅ 保存逻辑只服务 `Overview.tsx` 且仍是短小页面流程时留在页面；真实请求协议与复杂 React 生命周期分别出现后再增加 `service.ts` 和 `useProfileUpdate.ts`。
-- ❌ `accountSettings` 直接导入 `auth/internal/sessionCache.ts`。
+- ✅ 保存逻辑只服务 `overview.tsx` 且仍是短小页面流程时留在页面；真实请求协议与复杂 React 生命周期分别出现后再增加 `service.ts` 和 `useProfileUpdate.ts`。
+- ❌ `account-settings` 直接导入 `auth/internal/session-cache.ts`。
 - ✅ 认证模块通过稳定入口公开必要会话能力；真正跨功能且无业务归属的能力再提取到共享模块。
 
 ### 案例：源码、URL 与上游命名边界
 
-**覆盖**：大驼峰/小驼峰、目录语义去重、测试后缀、官方目录例外、URL 命名、禁止模糊文件名。
+**覆盖**：kebab-case、Hook 小驼峰例外、目录语义去重、测试后缀、官方目录例外、URL 命名、禁止模糊文件名。
 
 ```text
-✅ src/accountSettings/pages/Overview.tsx
-✅ src/accountSettings/hooks/useAccountSettings.ts
-✅ src/accountSettings/service.ts
-✅ src/accountSettings/pages/Overview.test.tsx
+✅ src/account-settings/pages/overview.tsx
+✅ src/account-settings/hooks/useAccountSettings.ts
+✅ src/account-settings/service.ts
+✅ src/account-settings/pages/overview.test.tsx
 ✅ /account-settings                              URL
 ✅ src/components/ui/alert-dialog.tsx             官方例外
 
-❌ src/accountSettings/pages/account-settings.tsx
-❌ src/accountSettings/pages/AccountSettingsPage.tsx    pages 与 accountSettings 语义重复
-❌ src/accountSettings/accountSettingsService.ts     功能目录名称重复
-❌ src/accountSettings/helpers.ts
+❌ src/account-settings/pages/account-settings.tsx        页面名重复功能目录
+❌ src/account-settings/pages/account-settings-page.tsx   pages 语义重复
+❌ src/account-settings/account-settings-service.ts       功能目录名称重复
+❌ src/account-settings/helpers.ts
 ```
 
-已有自有短横线文件在相关修改或独立重构中原子迁移，不能因此重命名官方组件文件。
+已有驼峰自有文件在相关修改或独立重构中原子迁移为 kebab-case，不能因此重命名官方组件文件。
 
 ### 案例：页面、功能组件和共享组件的位置
 
 **覆盖**：页面私有、页面内聚、提取边界、跨功能共享、页面编排、禁止业务组件进入上游目录。
 
-- `ProfileForm` 只服务账户设置，放在 `accountSettings/components`。
+- `FormProfile` 只服务账户设置，放在 `account-settings/components/form-profile.tsx`。
 - `ConfirmActionDialog` 被认证和账户设置稳定复用且没有功能依赖，可放在自有 `components`。
 - `Overview` 负责路由输入、布局和功能组合，也可以直接拥有页面专属的保存状态与事件处理；保存流程形成独立生命周期或真实请求协议后，再分别提取 `useProfileUpdate` 或 `service.ts`。
 - ❌ 把 `DeleteAccountDialog` 放进 `components/ui` 冒充 shadcn 官方原语。
@@ -173,7 +175,7 @@ src/accountSettings/
 
 - ✅ 跨功能的 `useMediaQuery` 可放 `src/hooks/useMediaQuery.ts`；真正管理登录取消、错误和会话更新的 `useLogin` 留在 `src/auth/hooks`。
 - ❌ `useLogin` 只包装 `useAuthAction` 并重命名返回值时仍为它创建文件；这种薄层应由页面直接调用原 Hook。
-- ✅ 无业务归属的 `mergeHeaders` 放在 `src/lib/mergeHeaders.ts`；`normalizeLoginError` 留在认证功能。
+- ✅ 无业务归属的 `mergeHeaders` 放在 `src/lib/merge-headers.ts`；`normalizeLoginError` 留在认证功能。
 - ❌ 建立一个 `src/api.ts` 容纳全部资源接口；✅ 单一功能使用 `auth/service.ts`，同一功能存在多类服务时再使用 `auth/services/session.ts`、`auth/services/credentials.ts`。
 - ❌ 把语言解析或主题存储放进 `src/lib/utils.ts`；它们分别属于 `i18n` 和 `theme`。
 
@@ -182,7 +184,7 @@ src/accountSettings/
 **覆盖**：`public`、构建哈希资源、样式共置、禁止重复资源。
 
 - 需要固定 `/robots.txt` 路径的文件放 `public/robots.txt`。
-- 账户页插图需要模块导入与内容哈希，放 `src/accountSettings/assets/` 并从组件导入。
+- 账户页插图需要模块导入与内容哈希，放 `src/account-settings/assets/` 并从组件导入。
 - 组件私有 CSS 与组件共置；全局排版和主题样式继续使用既有入口。
 - ❌ 同一个 logo 同时复制到 `public`、`src/assets` 和功能目录；应根据访问方式保留一个权威来源。
 
@@ -191,13 +193,13 @@ src/accountSettings/
 **覆盖**：共置单元/组件测试、集成目录、E2E 区域、辅助工具范围、生产不能依赖测试。
 
 ```text
-✅ src/auth/components/LoginForm.test.tsx
-✅ src/auth/sessionAdapter.test.ts
-✅ tests/integration/authSession.test.ts
+✅ src/auth/components/form-login.test.tsx
+✅ src/auth/session-adapter.test.ts
+✅ tests/integration/auth-session.test.ts
 ✅ e2e/login.spec.ts
 ```
 
-只服务一个测试文件的 builder 与测试共置；跨模块复用的测试工具进入明确测试目录。生产 `src/auth/service.ts` 不得导入 `tests/mockServer.ts`。
+只服务一个测试文件的 builder 与测试共置；跨模块复用的测试工具进入明确测试目录。生产 `src/auth/service.ts` 不得导入 `tests/mock-server.ts`。
 
 ### 案例：公开入口不等于层层 barrel
 
@@ -208,7 +210,7 @@ src/accountSettings/
 import { LoginRoute } from "@/auth";
 
 // ❌ 基础主题层反向依赖功能页面
-import { Login } from "@/auth/pages/Login";
+import { Login } from "@/auth/pages/login";
 ```
 
 不要再建立 `src/index.ts -> auth/index.ts -> components/index.ts -> forms/index.ts` 的多层重导出。发生循环时提取共同契约或重新分配职责，不能以动态导入掩盖。

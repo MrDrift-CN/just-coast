@@ -109,7 +109,7 @@ const THEME_MODES = ["light", "dark", "system"] as const;
 type ThemeMode = (typeof THEME_MODES)[number];
 ```
 
-新增组件应为 `ThemePicker.tsx`，不能通过新增 `ThemePicker.jsx` 绕开类型检查。
+新增组件应为 `theme-picker.tsx`，不能通过新增 `theme-picker.jsx` 绕开类型检查。
 
 ### 案例：推断只服务于局部，类型服务于契约
 
@@ -139,7 +139,7 @@ export async function loadSession(): Promise<SessionResult> {
 **覆盖**：对象契约、Props、联合与工具类型、一致性、上游例外。
 
 ```ts
-interface PasswordFieldProps {
+interface FieldPasswordProps {
   value: string;
   onChange: (value: string) => void;
 }
@@ -264,11 +264,11 @@ function enableFirst(items: readonly User[]): User[] {
 **覆盖**：命名 Props、具体事件、按需 `children`、禁用 `React.FC`、正确 ref。
 
 ```tsx
-interface LoginFormProps {
+interface FormLoginProps {
   onSubmit: (email: string) => void;
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export const FormLogin = ({ onSubmit }: FormLoginProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(new FormData(event.currentTarget).get("email")?.toString() ?? "");
@@ -278,7 +278,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
 }
 ```
 
-没有组合内容的 `LoginForm` 不声明 `children`。输入框 ref 应为 `HTMLInputElement`，而不是宽泛的 `HTMLElement`。
+没有组合内容的 `FormLogin` 不声明 `children`。输入框 ref 应为 `HTMLInputElement`，而不是宽泛的 `HTMLElement`。
 
 ### 案例：外部数据在边界校验
 

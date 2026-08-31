@@ -7,6 +7,10 @@
     "confirm": "确认",
     "save": "保存"
   },
+  "notifications": {
+    "region": "通知",
+    "close": "关闭通知"
+  },
   "language": {
     "label": "语言",
     "system": "跟随系统",

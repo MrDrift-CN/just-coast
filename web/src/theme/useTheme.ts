@@ -55,7 +55,7 @@ export const ThemeContext = React.createContext<ThemeContextValue | undefined>(
  * ```tsx
  * import { useTheme } from "@/theme"
  *
- * export function AppearanceControls() {
+ * export const AppearanceControls = () => {
  *   const { resolvedTheme, setTheme, updateConfig } = useTheme()
  *
  *   function handleThemeToggle() {

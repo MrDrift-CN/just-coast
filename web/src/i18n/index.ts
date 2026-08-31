@@ -43,7 +43,7 @@ export {
   NAMESPACES,
   RESOURCES,
 } from "@/i18n/config"
-export { LanguageButton } from "@/i18n/LanguageButton"
+export { LanguageButton } from "@/i18n/language-button"
 export { useLocale } from "@/i18n/useLocale"
 export { i18n }
 export {

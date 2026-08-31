@@ -137,6 +137,9 @@ export interface ThemePalette {
   /** 危险色背景上的内容颜色。 */
   destructiveForeground: string
 
+  /** 成功、完成和已生效状态颜色。 */
+  success: string
+
   /** 容器边界和分隔线颜色。 */
   border: string
 

@@ -41,6 +41,8 @@
 
 - `web` 使用 ESLint 10 Flat Config 和现代 JavaScript Stylelint 配置；不得在 `web` 新增 `.eslintrc` 或 `.stylelintrc`。
 - ESLint 对自有 TypeScript 启用类型感知规则，对 `components/ui`、`components/assistant-ui` 和官方 `use-mobile.ts` 保留上游边界。
+- ESLint 必须对自有源码强制 kebab-case 文件名，并只允许自定义 Hook 文件使用 `useXxx` 小驼峰；生成目录和生态固定入口保留已裁决例外。
+- ESLint 必须拒绝自有源码中的大写 `FunctionDeclaration`；大驼峰 React 组件使用 `const` 箭头函数声明，官方生成目录不执行该改写。
 - 当前 `eslint-plugin-jsx-a11y` 正式版的 peer 范围不包含 ESLint 10，因此 `web` 不强制安装；兼容版本发布前继续由 React、组件和 Code Review 规则覆盖可访问性语义。
 - Stylelint 必须识别 Tailwind CSS 4 指令，只允许 `#root` 这一 ID，并把 reduced-motion 中必要的 `!important` 保留为可见警告。
 - 格式细节由 Prettier 决定；类型正确性由 TypeScript 决定；语义和边界由 ESLint、Stylelint 与规则文档共同约束。
@@ -150,6 +152,7 @@ CommonJS 目标项目
 - Stylelint 允许项目实际使用的 Tailwind 4 指令，以 `selector-id-pattern` 只接受 `#root`，并把 reduced-motion 的必要 `!important` 保留为警告。
 - Prettier 决定格式，TypeScript 决定类型，ESLint/Stylelint 决定可自动检查的语义边界。
 - 若规则禁止原始色板而 ESLint 未覆盖该目录，应在同一变更修复配置或明确规则边界，不能长期让两者给出相反结果。
+- 若自有源码出现 `function Login()`，ESLint 应直接失败；改为 `const Login = () =>`，文件名使用 `login.tsx`，不能放宽函数或文件命名规则。官方生成组件保留上游形式。
 
 ### 案例：复制后的完整验收
 

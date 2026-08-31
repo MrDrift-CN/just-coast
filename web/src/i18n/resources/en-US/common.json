@@ -7,6 +7,10 @@
     "confirm": "Confirm",
     "save": "Save"
   },
+  "notifications": {
+    "region": "Notifications",
+    "close": "Close notification"
+  },
   "language": {
     "label": "Language",
     "system": "Use system language",

@@ -13,17 +13,17 @@
 
 ## 文件命名
 
-自有源码文件必须使用驼峰命名：
-
-- React 组件、页面和 Error Boundary 使用大驼峰，例如 `Login.tsx`、`PasswordField.tsx`。
-- Hook、工具、服务、配置模块和普通脚本使用小驼峰，例如 `useTheme.ts`、`formatMessage.ts`、`service.ts`。
-- 测试文件沿用被测文件名，例如 `PasswordField.test.tsx`。
-- 类型声明文件使用小驼峰，例如功能目录中的 `types.ts`；全局声明可使用约定文件名 `vite-env.d.ts`。
+- 自有源码文件和目录使用全小写短横线命名（kebab-case），例如 `login.tsx`、`field-password.tsx`、`fetch-request.ts`、`account-settings/`。
+- 自定义 Hook 文件是唯一源码文件例外：使用小驼峰并与导出 Hook 同名，例如 `useTheme.ts`、`useAuthAction.ts`。
+- 自有组件名称包含 `Form`、`Button`、`Field` 结构分类词时，分类词必须放在业务语义前，组件与文件保持同一词序，例如 `FormLogin`/`form-login.tsx`、`ButtonLanguage`/`button-language.tsx`、`FieldPassword`/`field-password.tsx`。只有名称确实需要表达该结构职责时才添加分类词，不得只为目录排序添加。
+- 测试文件沿用被测文件名并追加 `.test` 或 `.spec`，例如 `field-password.test.tsx`。
+- 类型声明文件同样使用 kebab-case；单词作用域文件可使用 `types.ts`，全局声明保留 `vite-env.d.ts`、`i18next.d.ts` 等生态或工具约定。
 - barrel 文件可以使用 `index.ts`，但不得为了缩短导入路径而创建层层 barrel。
-- 文件名不得重复当前直接目录的名称或该目录已经明确提供的职责语义，不得添加无信息量的前缀或后缀。例如使用 `auth/service.ts`、`auth/types.ts`、`auth/pages/Login.tsx`，禁止使用 `auth/authService.ts`、`auth/authTypes.ts`、`auth/pages/LoginPage.tsx`。
-- 只有目录不能提供足够上下文时，文件名才补充必要职责。例如共享目录使用 `lib/mergeHeaders.ts`，不能把不明确的 `lib/service.ts` 当作通用名称。
+- 文件名不得重复当前直接目录的名称或已明确的职责语义，不得添加无信息量的前缀或后缀。例如使用 `auth/service.ts`、`auth/types.ts`、`auth/pages/login.tsx`，禁止 `auth/auth-service.ts`、`auth/auth-types.ts`、`auth/pages/login-page.tsx`。
+- 只有目录不能提供足够上下文时，文件名才补充必要职责，例如共享目录使用 `lib/merge-headers.ts`，不能把不明确的 `lib/service.ts` 当作通用名称。
+- `index.ts`、`main.tsx`、`vite-env.d.ts`、`*.config.*`、`tsconfig*.json` 等生态固定入口和配置名保留原约定。
 
-`components/ui` 和 `components/assistant-ui` 中的官方源码保留原文件名，不执行驼峰重命名。
+`components/ui` 和 `components/assistant-ui` 中的官方源码保留原文件名，不为套用自有规则而重命名。
 
 已有自有文件不符合命名规则时，应在相关功能修改或独立重构中迁移；禁止为统一名称一次性制造不可审查的大规模重命名。
 
@@ -31,6 +31,10 @@
 
 - 变量、函数和实例使用小驼峰。
 - React 组件、类、类型和接口使用大驼峰。
+- 组件专属 Props、State 和 Values 类型跟随主组件词序，例如 `FormLoginProps`、`FormLoginValues`、`FieldPasswordProps`。
+- 结构分类词前置只约束组件身份、文件名及组件专属契约，不机械改变普通函数、变量和领域模型的自然语序；例如 `parseLoginFormData()` 与 `loginFormValues` 均可保留。
+- 使用 `function` 关键字声明的函数名称必须以小写字母开头；不得使用 `function PascalCase()` 声明自有 React 组件。
+- 自有 React 组件和页面必须以大驼峰 `const` 箭头函数声明；不得使用 `React.FC` 代替明确的 Props 契约。
 - 真正常量使用全大写下划线；普通不可变局部变量仍使用小驼峰。
 - 布尔值使用能够表达真假含义的前缀，如 `is`、`has`、`can`、`should`。
 - 事件处理函数使用 `handleXxx`，对应的回调属性使用 `onXxx`。
@@ -112,33 +116,36 @@
 **覆盖**：组件、页面、Hook、服务、类型、测试、barrel 命名，目录语义去重，以及存量迁移、共享目录和上游例外。
 
 ```text
-❌ src/auth/components/password-field.tsx        新增自有组件继续使用短横线
-❌ src/auth/pages/LoginPage.tsx                   pages 已提供页面语义
-❌ src/auth/authService.ts                       auth 前缀重复当前功能目录
-❌ src/auth/authTypes.ts                         auth 前缀重复当前功能目录
-❌ src/auth/hooks/useLoginHook.ts                 hooks 已提供 Hook 语义
+❌ src/auth/components/FieldPassword.tsx        自有文件不再使用大驼峰
+❌ src/auth/components/password-field.tsx       Field 结构角色不得后置
+❌ src/auth/components/login-form.tsx           Form 结构角色不得后置
+❌ src/auth/pages/login-page.tsx                 pages 已提供页面语义
+❌ src/auth/auth-service.ts                      auth 前缀重复当前功能目录
+❌ src/auth/auth-types.ts                        auth 前缀重复当前功能目录
+❌ src/auth/hooks/use-login.ts                   Hook 文件必须使用小驼峰
 ❌ src/auth/helpers.ts                           职责模糊
 ❌ src/auth/index/index.ts                       层层 barrel
 
-✅ src/auth/components/PasswordField.tsx
-✅ src/auth/pages/Login.tsx
+✅ src/auth/components/field-password.tsx
+✅ src/auth/components/form-login.tsx
+✅ src/auth/pages/login.tsx
 ✅ src/auth/hooks/useLogin.ts
 ✅ src/auth/service.ts
 ✅ src/auth/types.ts
-✅ src/auth/components/PasswordField.test.tsx
-✅ src/lib/mergeHeaders.ts                        共享目录需要补足具体职责
+✅ src/auth/components/field-password.test.tsx
+✅ src/lib/merge-headers.ts                       共享目录需要补足具体职责
 
 ✅ src/components/ui/alert-dialog.tsx             保留官方文件名
 ✅ src/components/assistant-ui/thread.tsx          保留官方文件名
 ```
 
-已有 `password-field.tsx` 只有在相关功能修改或独立重构中才原子迁移为 `PasswordField.tsx`，并同步更新全部导入；不得顺手批量重命名整个 `auth` 目录。
+已有驼峰文件在相关功能修改或独立命名迁移中原子改为 kebab-case，并同步更新全部导入；不得顺手重命名不相关或上游文件。
 
 以上示例只裁决已经成立的文件应如何命名；是否应创建 `useLogin.ts`、`service.ts` 或 `types.ts`，仍须按“代码组织”的真实边界判断。
 
 ### 案例：能够表达职责的标识符
 
-**覆盖**：大小驼峰、小驼峰、常量、布尔值、事件命名、禁止模糊缩写和过度泛化。
+**覆盖**：大小驼峰、小驼峰、函数声明形式、常量、布尔值、事件命名、禁止模糊缩写和过度泛化。
 
 ```ts
 // ❌ 含义不清，回调和属性无法对应
@@ -152,9 +159,17 @@ const hasLoginMethods = loginMethods.length > 0;
 const handleSubmit = () => submitLoginMethods(loginMethods);
 
 const DEFAULT_LOCALE = "zh-CN";
-interface LoginFormProps {
+interface FormLoginProps {
   onSubmit: (credentials: LoginCredentials) => void;
 }
+
+// ❌ function 关键字声明的名称不得以大写字母开头
+function LegacyFormLogin() {
+  return <form />;
+}
+
+// ✅ React 组件保留大驼峰，并使用 const 箭头函数声明
+const FormLogin = () => <form />;
 ```
 
 不要把普通不可变局部变量写成 `LOGIN_METHODS`，也不要把当前只负责登录的函数命名为猜测性的 `processEverything`。
@@ -213,11 +228,11 @@ async function loginAccount(account: Account) {
 
 **覆盖**：最近拥有者、独立变化原因、有效提取条件、非行数驱动、拒绝薄包装，以及单一调用方的边界。
 
-- ✅ 登录页专属的 `pending`、提交处理和短小表单读取可以先留在 `src/auth/pages/Login.tsx`；页面变长不自动要求创建 Hook 或工具文件。
+- ✅ 登录页专属的 `pending`、提交处理和短小表单读取可以先留在 `src/auth/pages/login.tsx`；页面变长不自动要求创建 Hook 或工具文件。
 - ❌ `useLogin` 只调用 `useAuthAction`，把 `execute` 改名为 `login` 后原样返回；这没有隐藏新的状态、规则或生命周期，应由页面直接使用 `useAuthAction` 或保留局部逻辑。
 - ✅ 当登录流程真正拥有取消、过期响应、结构化错误、会话更新等独立生命周期时，可以提取 `useLogin`，即使当前只有一个页面调用。
 - ✅ 隔离真实 HTTP、存储或第三方协议的适配器可以只有一个调用方；其价值来自隔离外部变化，而不是调用次数。
-- ❌ 不能因为目录示例出现 `hooks/`、`service.ts` 或 `formParsers.ts`，就在没有对应职责时补齐这些文件。
+- ❌ 不能因为目录示例出现 `hooks/`、`service.ts` 或 `form-parsers.ts`，就在没有对应职责时补齐这些文件。
 
 ### 案例：可恢复错误与浏览器能力
 
@@ -263,7 +278,7 @@ const locale = readLocaleWithLegacyFallback();
 const PASSWORD_MIN_LENGTH = 8;
 
 /** 浏览器校验通过后的登录字段。 */
-interface LoginFormValues {
+interface FormLoginValues {
   /** 用于认证并接收账号通知的邮箱地址。 */
   email: string;
 
@@ -272,7 +287,7 @@ interface LoginFormValues {
 }
 
 /** 从原生表单中读取登录字段，缺失或非文本值按空字符串处理。 */
-function parseLoginFormData(formData: FormData): LoginFormValues {
+function parseLoginFormData(formData: FormData): FormLoginValues {
   return {
     email: String(formData.get("email") ?? ""),
     password: String(formData.get("password") ?? ""),

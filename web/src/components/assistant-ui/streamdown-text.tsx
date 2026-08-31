@@ -13,8 +13,8 @@
  * parseMarkdownIntoBlocksFn。需要扩展时参见官方 Props 文档。
  *
  * 所有 VITE 前缀变量都会进入浏览器产物，禁止存放访问令牌、API 密钥或
- * 可信身份。X-User-Id 只能作为请求元数据，后端必须结合已认证会话或
- * 访问令牌验证身份。
+ * 可信身份。链接校验通过项目 `fetchRequest` 取得认证信息；X-User-Id 只
+ * 作为请求元数据，后端必须结合已认证会话与访问令牌验证身份。
  *
  * @see https://www.assistant-ui.com/docs/ui/streamdown#advanced-configuration
  * @see https://www.assistant-ui.com/docs/ui/streamdown#props
@@ -30,7 +30,8 @@ import { cjk } from "@streamdown/cjk"
 import { code } from "@streamdown/code"
 import { math } from "@streamdown/math"
 import { mermaid } from "@streamdown/mermaid"
-import { createContext, type ReactNode, useContext, useMemo } from "react"
+
+import { fetchRequest, REQUEST_AUTH_MODE } from "@/api"
 
 const FALLBACK_BROWSER_ORIGIN = "http://localhost"
 
@@ -78,49 +79,6 @@ const publicPrefix = toPrefix(
   "/public/"
 )
 
-interface RequestIdentity {
-  /** 当前登录用户标识；存在时写入 X-User-Id 请求头。 */
-  readonly userId?: string
-
-  /** 获取当前访问令牌；存在时写入 Authorization Bearer 请求头。 */
-  readonly getAccessToken?: () =>
-    string | null | undefined | Promise<string | null | undefined>
-}
-
-const RequestContext = createContext<RequestIdentity>({})
-
-/**
- * Markdown 请求身份 Provider。
- *
- * @param props - 子树、用户标识和访问令牌获取函数。
- * @returns 包含 Markdown 请求身份上下文的 React 元素。
- * @example
- * ~~~tsx
- * <MarkdownRequestProvider
- *   userId={session.user.id}
- *   getAccessToken={() => session.getAccessToken()}
- * >
- *   <App />
- * </MarkdownRequestProvider>
- * ~~~
- * @public
- * @since 1.0.0
- */
-export function MarkdownRequestProvider({
-  children,
-  userId,
-  getAccessToken,
-}: RequestIdentity & { readonly children: ReactNode }) {
-  const value = useMemo(
-    () => ({ userId, getAccessToken }),
-    [getAccessToken, userId]
-  )
-
-  return (
-    <RequestContext.Provider value={value}>{children}</RequestContext.Provider>
-  )
-}
-
 /**
  * Streamdown Markdown 文本组件。
  *
@@ -139,8 +97,6 @@ export function MarkdownRequestProvider({
  * @since 1.0.0
  */
 export function StreamdownText() {
-  const { userId, getAccessToken } = useContext(RequestContext)
-
   return (
     <StreamdownTextPrimitive
       defer
@@ -185,26 +141,18 @@ export function StreamdownText() {
             if (target.protocol === "mailto:") return true
             if (target.toString().startsWith(publicPrefix)) return true
 
-            const headers = new Headers({
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            })
-            const accessToken = await getAccessToken?.()
-
-            if (accessToken) {
-              headers.set("Authorization", "Bearer " + accessToken)
-            }
-            if (userId) headers.set("X-User-Id", userId)
-
-            const response = await fetch(
+            const response = await fetchRequest(
               toAbsoluteUrl(
                 import.meta.env.VITE_BACKEND_LINK_CHECK_PATH,
                 backendOrigin + "/api/security/check-link"
               ),
               {
                 method: "POST",
-                credentials: "include",
-                headers,
+                authMode: REQUEST_AUTH_MODE.required,
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
                 body: JSON.stringify({ url: target.toString() }),
               }
             )

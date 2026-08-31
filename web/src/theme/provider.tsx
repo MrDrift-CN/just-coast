@@ -24,7 +24,7 @@ import {
 import { ThemeContext, type ThemeContextValue } from "@/theme/useTheme"
 import type { ThemeConfig, ThemeConfigPatch, ThemeMode } from "@/theme/types"
 
-/** 主题 Provider 的根级配置。 */
+/** 主题 React Provider 的根级配置。 */
 export interface ProviderProps {
   /** 需要共享主题状态的应用节点。 */
   children: React.ReactNode
@@ -171,13 +171,13 @@ function subscribeToStoredTheme({
  * )
  * ```
  */
-export function Provider({
+export const Provider = ({
   children,
   defaultConfig = DEFAULT_THEME_CONFIG,
   defaultTheme,
   storageKey = THEME_STORAGE_KEY,
   disableTransitionOnChange = true,
-}: ProviderProps): React.JSX.Element {
+}: ProviderProps): React.JSX.Element => {
   const fallbackConfig = React.useMemo(
     () =>
       normalizeThemeConfig(

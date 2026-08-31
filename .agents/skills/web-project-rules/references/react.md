@@ -7,7 +7,9 @@
 ## 组件定义
 
 - 只使用函数组件和 Hooks 编写新组件。
-- 组件文件使用大驼峰，并与主要导出组件同名。
+- 自有组件和页面统一使用大驼峰 `const` 箭头函数声明；禁止使用 `function PascalCase()`。
+- 组件文件使用全小写 kebab-case，并将主要导出组件的 PascalCase 名称按同一词序转换。表单、按钮和字段组件必须分别使用 `Form`、`Button`、`Field` 前缀，例如 `FieldPassword` 对应 `field-password.tsx`。
+- `Form`、`Button`、`Field` 是受控结构前缀，只在组件名称确实需要表达对应结构职责时使用；不得为了目录排序强行添加，也不得据此倒置普通函数或变量的自然语序。
 - 一个文件只保留一个主要导出组件；仅服务于该组件的短小私有子组件可以同文件定义。
 - 可复用组件优先使用具名导出；只有路由或既有加载约定明确需要时使用默认导出。
 - 禁止新增 class component、mixins 和旧式生命周期实现。
@@ -104,12 +106,12 @@
 **覆盖**：函数组件、文件命名、单一主要导出、具名导出、禁止旧式组件和 `React.FC`。
 
 ```tsx
-interface PasswordFieldProps {
+interface FieldPasswordProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export function PasswordField({ value, onChange }: PasswordFieldProps) {
+export const FieldPassword = ({ value, onChange }: FieldPasswordProps) => {
   return (
     <input
       value={value}
@@ -119,7 +121,7 @@ export function PasswordField({ value, onChange }: PasswordFieldProps) {
 }
 ```
 
-该组件位于 `PasswordField.tsx`。不要在同一文件再导出无关的 `LoginForm`，也不要改成 class component 或 `React.FC<PasswordFieldProps>`。路由加载契约要求默认导出时可以局部使用默认导出。
+该组件位于 `field-password.tsx`。不要改为 `function FieldPassword()`，不要在同一文件再导出无关的 `FormLogin`，也不要改成 class component 或 `React.FC<FieldPasswordProps>`。路由加载契约要求默认导出时可以局部使用默认导出。
 
 ### 案例：路由、Provider 和懒加载边界
 
@@ -127,7 +129,7 @@ export function PasswordField({ value, onChange }: PasswordFieldProps) {
 
 ```tsx
 // ✅ 路由实例在 React 树外创建，动态路径可被 Vite 分析
-const SettingsPage = lazy(() => import("@/settings/pages/Settings"));
+const SettingsPage = lazy(() => import("@/settings/pages/settings"));
 
 export const router = createBrowserRouter([
   { path: "/settings", element: <SettingsPage /> },
@@ -144,7 +146,7 @@ export const router = createBrowserRouter([
 
 ```tsx
 // ❌ 修改 Props、渲染时写存储，并在父组件内创建组件类型
-function UserList({ users }: { users: User[] }) {
+const MutatingUserList = ({ users }: { users: User[] }) => {
   users.sort(byName);
   localStorage.setItem("lastRender", String(Date.now()));
   const Row = ({ user }: { user: User }) => <li>{user.name}</li>;
@@ -158,11 +160,11 @@ function UserList({ users }: { users: User[] }) {
 }
 
 // ✅ 派生数据是纯计算，子组件类型稳定
-function UserRow({ user }: { user: User }) {
+const UserRow = ({ user }: { user: User }) => {
   return <li>{user.name}</li>;
 }
 
-function UserList({ users }: { users: readonly User[] }) {
+const UserList = ({ users }: { users: readonly User[] }) => {
   const sortedUsers = users.toSorted(byName);
   return (
     <ul>
@@ -181,12 +183,12 @@ function UserList({ users }: { users: readonly User[] }) {
 **覆盖**：业务命名、真实可选性、正向布尔、回调命名、禁止 DOM 泄漏、参数默认值、隐藏实现细节。
 
 ```tsx
-interface SubmitButtonProps {
+interface ButtonSubmitProps {
   isPending?: boolean;
   onSubmit: () => void;
 }
 
-function SubmitButton({ isPending = false, onSubmit }: SubmitButtonProps) {
+const ButtonSubmit = ({ isPending = false, onSubmit }: ButtonSubmitProps) => {
   const handleClick = () => onSubmit();
   return (
     <Button type="button" disabled={isPending} onClick={handleClick}>
@@ -256,7 +258,7 @@ return (
 
 - ❌ 同时存储 `firstName`、`lastName` 和 `fullName`，再用 Effect 同步。
 - ✅ 只存储可编辑字段，渲染时计算 `fullName`。
-- ✅ `src/auth/pages/Login.tsx` 可以直接维护页面专属的提交状态和处理函数；没有独立生命周期时，不为减少页面行数创建 `useLogin`。
+- ✅ `src/auth/pages/login.tsx` 可以直接维护页面专属的提交状态和处理函数；没有独立生命周期时，不为减少页面行数创建 `useLogin`。
 - ✅ 页面中的订阅后来形成取消、重连和过期结果处理时，再提取职责明确的 Hook；单一调用方不会阻止这条真实边界。
 - ❌ 为标题是否展开创建全局 Context，或让认证组件读取聊天页内部 store。
 - ✅ 展开状态留在所属组件；主题、语言、认证等稳定跨层状态才进入职责明确的 Context。
@@ -267,7 +269,7 @@ return (
 **覆盖**：函数事件、受控策略、重复触发、按钮类型、完整状态反馈。
 
 ```tsx
-function LoginForm() {
+const FormLogin = () => {
   const [email, setEmail] = useState("");
   const { t } = useTranslation("auth");
   const { submit, status, error } = useLogin();
@@ -323,5 +325,5 @@ return (
 **覆盖**：保留官方形式、禁止复制改造、包装与最小修改。
 
 - ❌ 为统一自有命名批量把 `components/ui/alert-dialog.tsx` 改名，或复制其实现到功能目录再任意删减无障碍逻辑。
-- ✅ 在自有 `DeleteAccountDialog.tsx` 中组合官方 `AlertDialog`，通过 Props、插槽和主题令牌完成产品行为。
+- ✅ 在自有 `delete-account-dialog.tsx` 中组合官方 `AlertDialog`，通过 Props、插槽和主题令牌完成产品行为。
 - 边界：官方组件没有必要扩展点时，只做目标所需的最小本地修改并明确后续更新风险。

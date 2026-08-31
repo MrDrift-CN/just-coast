@@ -5,21 +5,19 @@ import "@/i18n"
 import "katex/dist/katex.min.css"
 import "streamdown/styles.css"
 import "@/index.css"
-import App from "@/App"
-import { MarkdownRequestProvider } from "@/components/assistant-ui/streamdown-text"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { initializeTheme, ThemeProvider } from "@/theme"
+import { App } from "@/app"
+import { initializeTheme } from "@/theme"
 
 initializeTheme()
 
-createRoot(document.getElementById("root")!).render(
+/** Vite HTML 模板中承载 React 应用的根节点。 */
+const rootElement = document.getElementById("root")
+if (!rootElement) {
+  throw new Error("Application root element is missing")
+}
+
+createRoot(rootElement).render(
   <StrictMode>
-    <ThemeProvider>
-      <MarkdownRequestProvider>
-        <TooltipProvider>
-          <App />
-        </TooltipProvider>
-      </MarkdownRequestProvider>
-    </ThemeProvider>
+    <App />
   </StrictMode>
 )

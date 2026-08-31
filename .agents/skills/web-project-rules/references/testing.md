@@ -144,7 +144,7 @@
 
 ```tsx
 it("disables submit while login is pending and prevents a second request", async () => {
-  renderWithLocale(<LoginForm />, "en-US");
+  renderWithLocale(<FormLogin />, "en-US");
 
   await user.type(
     screen.getByRole("textbox", { name: /email/i }),

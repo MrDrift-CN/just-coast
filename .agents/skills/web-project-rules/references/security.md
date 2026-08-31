@@ -32,6 +32,9 @@
 - Cookie 鉴权必须配合适当的 SameSite、Secure、HttpOnly 和 CSRF 策略。
 - 注销必须清理客户端敏感状态和缓存，不能仅跳转页面。
 - 不向不同用户复用可能包含私密数据的持久化缓存。
+- JWT 与 CSRF Token 只保存在内存中；不得写入 Local Storage、Session Storage、URL 或跨标签页消息。
+- 多标签页只广播会话变化和注销事件，收到事件后通过 HttpOnly Cookie Session 重新恢复状态。
+- 服务端 Session Cookie 固定采用 `__Host-` 前缀、`Path=/`、`HttpOnly`、`Secure` 与 `SameSite=Lax`，不得设置 `Domain`。
 
 ## 输入与数据
 
@@ -128,9 +131,28 @@ function parseExternalUrl(value: string): URL | null {
 
 - ❌ 只隐藏“删除账户”按钮就认为普通用户无法调用接口。
 - ✅ UI 根据权限改善体验，服务端仍验证当前会话和操作权限。
-- ✅ 认证状态明确区分 initializing、authenticated、expired、refreshing、anonymous，并处理多标签注销。
+- ✅ 认证状态明确区分 initializing、anonymous、authenticated、refreshing、expired、unavailable，并处理多标签注销。
 - ✅ Cookie 方案由服务端设置合适属性并配套 CSRF；不随意把高价值凭据放长期脚本可读存储。
 - ✅ 注销清除会话、私密查询缓存和用户专属状态，再导航；不同用户绝不共享持久化私密缓存。
+
+### 案例：Session、JWT 与 CSRF 的职责分离
+
+**覆盖**：唯一事实来源、内存凭据、请求头保护、刷新并发、跨标签同步、Cookie 与 CORS。
+
+```text
+auth/session.ts               Session 生命周期和唯一内存快照
+auth/provider.tsx                    只把运行时接入 React
+api/authentication.ts         解析认证模式并注入受保护请求头
+api/request.ts                JSON 请求和 401 单次重试
+api/fetch-request.ts          SSE、流式请求和原始 Response
+```
+
+- Session 状态固定区分 `initializing`、`anonymous`、`authenticated`、`refreshing`、`expired`、`unavailable`。
+- `auth/index.ts` 只向其他功能提供 `SessionProvider`、`useSession`、安全会话模型和路由，不暴露 JWT、CSRF、Gateway 或 Mock/API 实现。
+- 并发请求共享一次 JWT 刷新；刷新失败或第二次 401 清除 Session、JWT 与 CSRF Token。
+- 扫码确认属于受保护操作；手机未登录时保留挑战地址，登录完成后返回确认页。
+- API 子域必须精确允许前端来源和 Credentials，响应包含 `Vary: Origin`，并只允许协议需要的认证、用户、CSRF 与内容类型请求头。
+- Mock 可以模拟 Session、JWT、CSRF、过期、刷新、注销、GitHub 与扫码状态，但 `mockOnly` JWT 永远不能离开浏览器去往真实服务。
 
 ### 案例：输入、文件和领域事实
 

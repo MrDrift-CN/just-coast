@@ -165,7 +165,7 @@ export async function loadVisibleUser(userId: UserId): Promise<User> {
 export const PASSWORD_MIN_LENGTH = 8;
 
 /** 浏览器校验通过后的登录字段。 */
-export interface LoginFormValues {
+export interface FormLoginValues {
   /** 用于认证并接收账号通知的邮箱地址。 */
   email: string;
 
@@ -174,7 +174,7 @@ export interface LoginFormValues {
 }
 
 /** 从原生表单中读取登录字段，缺失或非文本值按空字符串处理。 */
-export function parseLoginFormData(formData: FormData): LoginFormValues {
+export function parseLoginFormData(formData: FormData): FormLoginValues {
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -315,6 +315,6 @@ renderRichText(safeHtml);
 **覆盖**：保留上游注释、自有包装优先、最小本地补丁、生成源修复，以及审查和交付清理。
 
 - ❌ 为统一成中文，批量改写 `src/components/ui` 和 `src/components/assistant-ui` 的官方注释。
-- ✅ 在自有 `AccountDialog.tsx` 包装组件中记录项目特有的焦点恢复契约，官方组件保持不动。
+- ✅ 在自有 `account-dialog.tsx` 包装组件中记录项目特有的焦点恢复契约，官方组件保持不动。
 - ✅ 必须修改官方源码时，只在补丁旁说明本项目的兼容原因和删除条件；上游能力满足需求后复查并移除。
 - ✅ 生成文件的注释有误时修改模板或生成器并重新生成；Code Review 同时检查输出中不存在旧注释、占位内容和无依据抑制。

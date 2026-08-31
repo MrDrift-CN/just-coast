@@ -1,3 +1,5 @@
+import path from "node:path"
+
 import js from "@eslint/js"
 import { defineConfig, globalIgnores } from "eslint/config"
 import reactHooks from "eslint-plugin-react-hooks"
@@ -14,8 +16,63 @@ const generatedFiles = [
   "src/hooks/use-mobile.ts",
 ]
 
+/** 自有非 Hook 源码文件允许的全小写 kebab-case 格式。 */
+const KEBAB_CASE_FILE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u
+
+/** 自定义 Hook 文件允许的 useXxx 小驼峰格式。 */
+const HOOK_FILE_NAME_PATTERN = /^use[A-Z][A-Za-z0-9]*$/u
+
+/** 检查自有源码文件的 kebab-case 和 Hook 小驼峰边界。 */
+const sourceFileNamingRule = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      invalidHook: "自定义 Hook 文件 {{fileName}} 必须使用 useXxx 小驼峰命名。",
+      invalidSource:
+        "自有源码文件 {{fileName}} 必须使用全小写 kebab-case 命名。",
+    },
+  },
+  create(context) {
+    return {
+      Program(node) {
+        const fileName = path.basename(context.filename)
+        const sourceName = fileName
+          .replace(/\.(?:jsx?|tsx?)$/u, "")
+          .replace(/\.d$/u, "")
+          .replace(/\.(?:test|spec)$/u, "")
+        const isHookFile = /^use(?:-|[A-Z])/u.test(sourceName)
+        const pattern = isHookFile
+          ? HOOK_FILE_NAME_PATTERN
+          : KEBAB_CASE_FILE_NAME_PATTERN
+
+        if (!pattern.test(sourceName)) {
+          context.report({
+            node,
+            messageId: isHookFile ? "invalidHook" : "invalidSource",
+            data: { fileName },
+          })
+        }
+      },
+    }
+  },
+}
+
+/** 项目自有 ESLint 命名规则插件。 */
+const projectNamingPlugin = {
+  rules: {
+    "source-file-name": sourceFileNamingRule,
+  },
+}
+
 const classStringScope =
   ":matches(JSXAttribute[name.name='className'], CallExpression[callee.name=/^(clsx|cn|cva)$/])"
+
+const restrictedFunctionDeclarationSyntax = {
+  selector: "FunctionDeclaration[id.name=/^[A-Z]/]",
+  message:
+    "使用 function 关键字声明的函数必须以小写字母开头；React 组件请使用大驼峰 const 箭头函数。",
+}
 
 const restrictedStyleSyntax = [
   {
@@ -168,11 +225,34 @@ export default defineConfig([
     },
   },
   {
+    name: "project/source-file-naming",
+    files: sourceFiles,
+    ignores: generatedFiles,
+    plugins: {
+      "project-naming": projectNamingPlugin,
+    },
+    rules: {
+      "project-naming/source-file-name": "error",
+    },
+  },
+  {
+    name: "project/function-declaration-naming",
+    files: sourceFiles,
+    ignores: generatedFiles,
+    rules: {
+      "no-restricted-syntax": ["error", restrictedFunctionDeclarationSyntax],
+    },
+  },
+  {
     name: "project/theme-boundaries",
     files: ["src/**/*.{ts,tsx}"],
     ignores: generatedFiles,
     rules: {
-      "no-restricted-syntax": ["error", ...restrictedStyleSyntax],
+      "no-restricted-syntax": [
+        "error",
+        restrictedFunctionDeclarationSyntax,
+        ...restrictedStyleSyntax,
+      ],
     },
   },
   {

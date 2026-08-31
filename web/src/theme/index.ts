@@ -9,7 +9,7 @@
 export {
   Provider as ThemeProvider,
   type ProviderProps as ThemeProviderProps,
-} from "@/theme/Provider"
+} from "@/theme/provider"
 export { initializeTheme } from "@/theme/runtime"
 export { useTheme, type ThemeContextValue } from "@/theme/useTheme"
 export type {

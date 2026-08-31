@@ -59,7 +59,7 @@
 
 ## CSS 文件与选择器
 
-- 自有样式文件使用小驼峰命名。
+- 自有样式文件使用全小写 kebab-case 命名。
 - 选择器保持低特异性，优先类和语义属性。
 - 禁止通过 ID 选择器设计业务组件样式；应用挂载节点和根布局可以作为受控例外。
 - 禁止依赖复杂 DOM 层级和过长后代选择器。
@@ -107,14 +107,14 @@
 const Card = styled.div({ color: "#2563eb" });
 
 // ✅ 页面拥有布局，组件使用现有 Tailwind 和主题能力
-export function SettingsPage() {
+export const SettingsPage = () => {
   return <main className="mx-auto grid max-w-4xl gap-6 px-4 py-8" />;
 }
 ```
 
 - `src/index.css` 只导入 Tailwind、`theme/styles.css` 和全局样式模块。
 - `src/theme` 维护主题状态与令牌，`src/style` 维护跨页面排版；页面私有布局留在页面组件。
-- 只有现有工具类无法清晰表达的跨元素规则才新增小驼峰 CSS 文件。
+- 只有现有工具类无法清晰表达的跨元素规则才新增 kebab-case CSS 文件。
 
 ### 案例：复用组件变体和布局工具
 
@@ -208,7 +208,7 @@ return <p className={cn("text-sm", toneClassName[tone], className)} />;
 
 ### 案例：低特异性和受控全局样式
 
-**覆盖**：小驼峰 CSS 文件、类和属性选择器、ID 例外、禁止复杂层级、上游内部选择器、全局作用域。
+**覆盖**：kebab-case CSS 文件、类和属性选择器、ID 例外、禁止复杂层级、上游内部选择器、全局作用域。
 
 ```css
 /* ❌ 依赖页面和上游内部 DOM */

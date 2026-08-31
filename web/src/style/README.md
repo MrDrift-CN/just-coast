@@ -24,6 +24,7 @@
 7. 宽高相同时使用 `size-*`；单行截断使用 `truncate`。
 8. Dialog、Sheet、Popover、Tooltip 等浮层不手写 `z-index`。
 9. 优先复用项目已有动画与滚动工具，不重复编写相同的关键帧。
+10. 自有 CSS 文件使用全小写 kebab-case；官方生成或生态固定文件名保留原约定。
 
 ## Typeset
 
