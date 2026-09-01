@@ -1,8 +1,10 @@
 import type { InitOptions } from "i18next"
 
 import enUSAuth from "@/i18n/resources/en-US/auth.json"
+import enUSChat from "@/i18n/resources/en-US/chat.json"
 import enUSCommon from "@/i18n/resources/en-US/common.json"
 import zhCNAuth from "@/i18n/resources/zh-CN/auth.json"
+import zhCNChat from "@/i18n/resources/zh-CN/chat.json"
 import zhCNCommon from "@/i18n/resources/zh-CN/common.json"
 import {
   canonicalizeDetectedLocale,
@@ -12,7 +14,7 @@ import {
 } from "@/i18n/locale"
 
 /** 应用翻译命名空间；新增值时必须同步所有支持语言的资源。 */
-export const NAMESPACES = ["common", "auth"] as const
+export const NAMESPACES = ["common", "auth", "chat"] as const
 
 /** 未显式指定命名空间时使用的默认命名空间。 */
 export const DEFAULT_NAMESPACE = "common" as const
@@ -27,10 +29,12 @@ export const DEFAULT_NAMESPACE = "common" as const
 export const RESOURCES = {
   "en-US": {
     auth: enUSAuth,
+    chat: enUSChat,
     common: enUSCommon,
   },
   "zh-CN": {
     auth: zhCNAuth,
+    chat: zhCNChat,
     common: zhCNCommon,
   },
 } as const

@@ -13,9 +13,9 @@ import type { FormLoginValues } from "@/auth/components/form-login"
 import type { FormRegisterValues } from "@/auth/components/form-register"
 import type { FormResetPasswordValues } from "@/auth/components/form-reset-password"
 import { QrCodeLoginDialog } from "@/auth/components/qr-code-login-dialog"
-import { useSessionController } from "@/auth/useSession"
+import { useSessionController } from "@/auth/hooks/useSession.ts"
 import { Login, type LoginScene } from "@/auth/pages/login"
-import { Register } from "@/auth/pages/register"
+import { Register } from "@/auth/pages/register.tsx"
 import {
   completeGithubSignIn,
   createQrLoginChallenge,
@@ -32,6 +32,7 @@ import {
 import {
   QR_LOGIN_STATUS,
   VERIFICATION_CODE_PURPOSE,
+  type AuthenticationResult,
   type GithubCallbackInput,
   type VerificationCodeResult,
 } from "@/auth/types"
@@ -126,11 +127,16 @@ export const LoginRoute = () => {
     scene = isResetStage ? "resetPassword" : "forgotPassword"
   }
 
+  /** 接收任意登录方式的认证结果，并进入扫码返回页或 Chat。 */
+  const handleAuthenticated = (result: AuthenticationResult): void => {
+    establish(result)
+    void navigate(returnPath ?? "/chat", { replace: true })
+  }
+
   /** 使用表单凭据建立 Session、保存 JWT 并更新共享认证状态。 */
   const handleSignIn = async (values: FormLoginValues): Promise<void> => {
     const response = await signIn(values)
-    establish(response.data)
-    if (returnPath) void navigate(returnPath, { replace: true })
+    handleAuthenticated(response.data)
   }
 
   /** 根据当前场景发送用途隔离的邮箱验证码。 */
@@ -206,7 +212,7 @@ export const LoginRoute = () => {
         onSubmit={handleSignIn}
       />
       <QrCodeLoginDialog
-        onAuthenticated={establish}
+        onAuthenticated={handleAuthenticated}
         onCreateChallenge={createQrLoginChallenge}
         onGetStatus={getQrLoginStatus}
         onOpenChange={setQrDialogOpen}
@@ -224,6 +230,12 @@ export const RegisterRoute = () => {
   const [qrDialogOpen, setQrDialogOpen] = useState(false)
   const returnPath = readQrLoginReturnPath(searchParams.get("returnTo"))
   const loginPath = createAuthPath("/login", returnPath)
+
+  /** 接收备选登录方式的认证结果，并进入扫码返回页或 Chat。 */
+  const handleAuthenticated = (result: AuthenticationResult): void => {
+    establish(result)
+    void navigate(returnPath ?? "/chat", { replace: true })
+  }
 
   /** 创建账户，并在成功后返回登录。 */
   const handleRegister = async (values: FormRegisterValues): Promise<void> => {
@@ -258,7 +270,7 @@ export const RegisterRoute = () => {
         onSubmit={handleRegister}
       />
       <QrCodeLoginDialog
-        onAuthenticated={establish}
+        onAuthenticated={handleAuthenticated}
         onCreateChallenge={createQrLoginChallenge}
         onGetStatus={getQrLoginStatus}
         onOpenChange={setQrDialogOpen}
@@ -278,7 +290,7 @@ export const GithubCallbackRoute = () => {
   const code = searchParams.get("code")
   const state = searchParams.get("state")
 
-  /** 消费一次性回调参数，成功后返回登录入口。 */
+  /** 消费一次性回调参数，成功后进入 Chat。 */
   useEffect(() => {
     if (!code || !state) return
 
@@ -289,7 +301,7 @@ export const GithubCallbackRoute = () => {
         if (cancelled) return
         establish(response.data)
         toast.add({ title: t("login.feedback.success"), type: "success" })
-        void navigate("/login", { replace: true })
+        void navigate("/chat", { replace: true })
       })
       .catch(() => {
         if (!cancelled) setFailed(true)

@@ -1475,7 +1475,7 @@ When using `AssistantChatTransport`, the following are automatically sent to you
 ```typescript
 // Your backend receives in req.body:
 {
-  messages: UIMessage[],     // Conversation messages
+  messages: UIMessage[],     // History messages
   system: string,            // System prompt from context
   tools: Record<string, {...}>,  // Frontend tools (as JSON schema)
   callSettings: {...},       // Call settings from context

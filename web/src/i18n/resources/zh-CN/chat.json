@@ -1,0 +1,66 @@
+{
+  "welcome": {
+    "title": "有什么可以帮你的？",
+    "suggestionsLabel": "建议问题",
+    "suggestions": {
+      "analyzeProblem": "帮我分析一个复杂问题",
+      "summarizeDocument": "总结一份文档的重点",
+      "createPlan": "制定一个可执行的计划",
+      "explainConcept": "解释一个技术概念"
+    }
+  },
+  "prompt": {
+    "label": "消息输入",
+    "placeholder": "输入你的问题",
+    "send": "发送消息",
+    "stop": "停止生成",
+    "attachments": {
+      "add": "添加附件",
+      "remove": "移除附件",
+      "rejected": "不支持此附件类型",
+      "mediaUnsupported": "不支持音频或视频附件",
+      "tooLarge": "附件不能超过 {{maxSize}} MB",
+      "failed": "附件添加失败"
+    },
+    "mentions": {
+      "label": "可提及项",
+      "empty": "暂无可提及的工具"
+    },
+    "commands": {
+      "label": "快捷命令",
+      "empty": "暂无匹配的快捷命令",
+      "groups": {
+        "skill": "技能"
+      },
+      "newConversation": {
+        "label": "新建对话",
+        "description": "创建一个新的临时对话"
+      },
+      "openNews": {
+        "label": "AI 时讯",
+        "description": "打开 AI 时讯页面"
+      }
+    }
+  },
+  "sidebar": {
+    "newConversation": "新建对话",
+    "untitledConversation": "新对话",
+    "aiNews": "AI 时讯",
+    "searchConversations": "搜索对话",
+    "searchPlaceholder": "搜索对话",
+    "toggle": "展开或收起侧边栏",
+    "threadActions": "对话操作",
+    "renameConversation": "重命名对话",
+    "renameDescription": "修改此对话在线程列表中显示的标题。",
+    "conversationTitle": "对话标题",
+    "renameFailed": "对话重命名失败",
+    "archiveConversation": "归档对话",
+    "deleteConversation": "删除对话",
+    "deleteDescription": "删除后无法恢复，确定要永久删除此对话吗？",
+    "deleteFailed": "对话删除失败",
+    "settingsMenu": "设置菜单",
+    "guest": "未登录用户",
+    "noAccount": "暂无账户信息",
+    "logout": "退出登录"
+  }
+}

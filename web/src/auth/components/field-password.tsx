@@ -13,8 +13,8 @@ import {
 /** 认证密码输入默认使用的浏览器最少字符约束。 */
 const PASSWORD_MIN_LENGTH = 8
 
-/** 带标签、错误提示和可见性切换的密码输入属性。 */
-export interface PasswordFieldProps extends Omit<
+/** 带标签、错误反馈和可见性切换的密码输入属性。 */
+export interface FieldPasswordProps extends Omit<
   ComponentProps<typeof InputGroupInput>,
   "id" | "type"
 > {
@@ -26,51 +26,79 @@ export interface PasswordFieldProps extends Omit<
 
   /** 当前校验错误；存在时同步设置无效状态和描述关系。 */
   error?: string
+
+  /** 是否将标签放入输入框左侧，形成紧凑的认证字段。 */
+  labelInsideInput?: boolean
 }
 
 /** 渲染具备可访问标签、错误反馈和明文切换的密码输入框。 */
-export function PasswordField({
+export const FieldPassword = ({
   error,
   id,
   label,
+  labelInsideInput = false,
   minLength = PASSWORD_MIN_LENGTH,
   ...inputProps
-}: PasswordFieldProps) {
+}: FieldPasswordProps) => {
   const { t } = useTranslation("auth")
-  const [visible, setVisible] = useState(false)
-  const invalid = Boolean(error) || Boolean(inputProps["aria-invalid"])
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const isInvalid = Boolean(error) || Boolean(inputProps["aria-invalid"])
   const errorId = `${id}-error`
   const labelId = `${id}-label`
+
+  /** 切换密码明文与密文显示状态。 */
+  const handleVisibilityToggle = (): void => {
+    setIsPasswordVisible((currentVisibility) => !currentVisibility)
+  }
 
   return (
     <Field
       data-disabled={inputProps.disabled || undefined}
-      data-invalid={invalid || undefined}
+      data-invalid={isInvalid || undefined}
     >
-      <FieldLabel htmlFor={id} id={labelId}>
-        {label}
-      </FieldLabel>
+      {!labelInsideInput ? (
+        <FieldLabel htmlFor={id} id={labelId}>
+          {label}
+        </FieldLabel>
+      ) : null}
       <InputGroup className="auth-input-group">
+        {labelInsideInput ? (
+          <InputGroupAddon
+            align="inline-start"
+            className="min-w-24 shrink-0 justify-start border-e border-border/60 px-3"
+          >
+            <FieldLabel
+              className="cursor-text whitespace-nowrap"
+              htmlFor={id}
+              id={labelId}
+            >
+              {label}
+            </FieldLabel>
+          </InputGroupAddon>
+        ) : null}
         <InputGroupInput
           {...inputProps}
           aria-describedby={error ? errorId : inputProps["aria-describedby"]}
-          aria-invalid={invalid || undefined}
+          aria-invalid={isInvalid || undefined}
           aria-labelledby={inputProps["aria-labelledby"] ?? labelId}
           id={id}
           minLength={minLength}
-          type={visible ? "text" : "password"}
+          type={isPasswordVisible ? "text" : "password"}
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton
             aria-label={
-              visible ? t("fields.password.hide") : t("fields.password.show")
+              isPasswordVisible
+                ? t("fields.password.hide")
+                : t("fields.password.show")
             }
-            aria-pressed={visible}
+            aria-pressed={isPasswordVisible}
             disabled={inputProps.disabled}
-            onClick={() => setVisible((current) => !current)}
+            onClick={handleVisibilityToggle}
             size="icon-xs"
+            type="button"
           >
-            {visible ? (
+            {isPasswordVisible ? (
               <EyeOffIcon aria-hidden="true" />
             ) : (
               <EyeIcon aria-hidden="true" />

@@ -7,9 +7,6 @@ import {
   isApiError,
 } from "@/api/errors"
 
-/** 浏览器环境不可用时用于解析相对地址的本地安全来源。 */
-const LOCAL_API_ORIGIN = "http://localhost"
-
 /** Axios 取消请求时使用的稳定错误标识。 */
 const AXIOS_CANCELLED_CODE = "ERR_CANCELED"
 
@@ -18,32 +15,6 @@ const AXIOS_TIMEOUT_CODES = new Set(["ECONNABORTED", "ETIMEDOUT"])
 
 /** 服务端可能返回请求追踪标识的响应头名称。 */
 const REQUEST_ID_HEADER_NAMES = ["x-request-id", "request-id"] as const
-
-/** 读取当前浏览器来源，非浏览器执行环境只回退到本地地址。 */
-function getRuntimeOrigin(): string {
-  return typeof window === "undefined"
-    ? LOCAL_API_ORIGIN
-    : window.location.origin
-}
-
-/** 解析并限制后端来源，防止配置携带凭据或非 HTTP 协议。 */
-function readApiOrigin(): string {
-  const configuredOrigin = import.meta.env.VITE_BACKEND_ORIGIN?.trim()
-  const url = new URL(
-    configuredOrigin || getRuntimeOrigin(),
-    getRuntimeOrigin()
-  )
-
-  if (
-    (url.protocol !== "http:" && url.protocol !== "https:") ||
-    url.username !== "" ||
-    url.password !== ""
-  ) {
-    throw new ApiError({ code: API_ERROR_CODE.invalidRequest })
-  }
-
-  return url.origin
-}
 
 /** 从 Axios 响应头读取第一个非空请求追踪标识。 */
 export function readApiRequestId(
@@ -118,8 +89,11 @@ function normalizeAxiosError(error: unknown): ApiError {
   })
 }
 
-/** 通用请求允许访问的唯一后端来源。 */
-export const API_ORIGIN = readApiOrigin()
+/** 通用请求使用的后端来源。 */
+export const API_ORIGIN = new URL(
+  import.meta.env.VITE_BACKEND_ORIGIN || window.location.origin,
+  window.location.origin
+).origin
 
 /** 项目唯一 Axios 实例；业务服务必须通过通用 `request` 包装器使用。 */
 export const apiClient = axios.create({

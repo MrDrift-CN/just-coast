@@ -1,8 +1,8 @@
 export { SessionProvider } from "@/auth/provider"
 export type { SessionProviderProps } from "@/auth/provider"
 export type { SessionStatus } from "@/auth/session"
-export { useSession } from "@/auth/useSession"
-export type { SessionContextValue } from "@/auth/useSession"
+export { useSession } from "@/auth/hooks/useSession.ts"
+export type { SessionContextValue } from "@/auth/hooks/useSession.ts"
 export {
   GithubCallbackRoute,
   LoginRedirect,

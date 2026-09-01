@@ -4,6 +4,7 @@
 @import "@fontsource-variable/geist";
 @import "tw-shimmer";
 @import "./theme/styles.css";
+@import "./style/controls.css";
 @import "./style/typeset.css";
 
 @source "../node_modules/streamdown/dist/*.js";

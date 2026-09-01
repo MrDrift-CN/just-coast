@@ -1,0 +1,66 @@
+{
+  "welcome": {
+    "title": "How can I help you?",
+    "suggestionsLabel": "Suggested questions",
+    "suggestions": {
+      "analyzeProblem": "Help me analyze a complex problem",
+      "summarizeDocument": "Summarize the key points of a document",
+      "createPlan": "Create an actionable plan",
+      "explainConcept": "Explain a technical concept"
+    }
+  },
+  "prompt": {
+    "label": "Message input",
+    "placeholder": "Ask a question",
+    "send": "Send message",
+    "stop": "Stop generating",
+    "attachments": {
+      "add": "Add attachment",
+      "remove": "Remove attachment",
+      "rejected": "This attachment type is not supported",
+      "mediaUnsupported": "Audio and video attachments are not supported",
+      "tooLarge": "Attachments cannot exceed {{maxSize}} MB",
+      "failed": "Attachment could not be added"
+    },
+    "mentions": {
+      "label": "Mention suggestions",
+      "empty": "No tools are available to mention"
+    },
+    "commands": {
+      "label": "Quick commands",
+      "empty": "No matching commands",
+      "groups": {
+        "skill": "Skills"
+      },
+      "newConversation": {
+        "label": "New conversation",
+        "description": "Create a new temporary conversation"
+      },
+      "openNews": {
+        "label": "AI News",
+        "description": "Open the AI News page"
+      }
+    }
+  },
+  "sidebar": {
+    "newConversation": "New conversation",
+    "untitledConversation": "New conversation",
+    "aiNews": "AI News",
+    "searchConversations": "Search conversations",
+    "searchPlaceholder": "Search conversations",
+    "toggle": "Expand or collapse sidebar",
+    "threadActions": "Conversation actions",
+    "renameConversation": "Rename conversation",
+    "renameDescription": "Change the title shown for this conversation in the thread list.",
+    "conversationTitle": "Conversation title",
+    "renameFailed": "Conversation could not be renamed",
+    "archiveConversation": "Archive conversation",
+    "deleteConversation": "Delete conversation",
+    "deleteDescription": "This cannot be undone. Permanently delete this conversation?",
+    "deleteFailed": "Conversation could not be deleted",
+    "settingsMenu": "Settings menu",
+    "guest": "Signed-out user",
+    "noAccount": "No account information",
+    "logout": "Log out"
+  }
+}

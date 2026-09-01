@@ -1,0 +1,30 @@
+/*
+ * 输入类控件统一通过边框表达焦点和校验状态，避免外层光晕干扰紧凑布局。
+ * 选择器只覆盖输入类 slot；独立按钮、菜单和其他键盘操作控件仍保留焦点光晕。
+ */
+[data-slot="input"]:focus-visible,
+[data-slot="input"][aria-invalid="true"],
+[data-slot="textarea"]:focus-visible,
+[data-slot="textarea"][aria-invalid="true"],
+[data-slot="select-trigger"]:focus-visible,
+[data-slot="select-trigger"][aria-invalid="true"],
+[data-slot="native-select"]:focus-visible,
+[data-slot="native-select"][aria-invalid="true"],
+[data-slot="questionnaire-input"]:focus-visible,
+[data-slot="questionnaire-input"][aria-invalid="true"],
+[data-slot="checkbox"]:focus-visible,
+[data-slot="checkbox"][aria-invalid="true"],
+[data-slot="radio-group-item"]:focus-visible,
+[data-slot="radio-group-item"][aria-invalid="true"],
+[data-slot="switch"]:focus-visible,
+[data-slot="switch"][aria-invalid="true"],
+[data-slot="slider-thumb"],
+[data-slot="input-group"]:has([data-slot="input-group-control"]:focus-visible),
+[data-slot="input-group"]:has([data-slot][aria-invalid="true"]),
+[data-slot="input-group"] button:focus-visible,
+[data-slot="combobox-chips"]:focus-within,
+[data-slot="combobox-chips"]:has([aria-invalid="true"]),
+[data-slot="input-otp-group"]:has([aria-invalid="true"]),
+[data-slot="input-otp-slot"][data-active="true"] {
+  box-shadow: none;
+}

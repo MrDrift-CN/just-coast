@@ -23,7 +23,7 @@ function CustomThreadList() {
   return (
     <ThreadListPrimitive.Root className="flex flex-col h-full">
       <ThreadListPrimitive.New className="m-2 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-        + New Conversation
+        + New History
       </ThreadListPrimitive.New>
 
       <div className="flex-1 overflow-y-auto">

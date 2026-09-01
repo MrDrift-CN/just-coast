@@ -14,8 +14,8 @@ import {
 import { isLocalePreference } from "@/i18n/locale"
 import { useLocale } from "@/i18n/useLocale"
 
-/** 提供可在任意界面复用的应用语言选择入口。 */
-export function LanguageButton() {
+/** 提供可在各界面复用的应用语言选择入口。 */
+export const LanguageButton = () => {
   const { t } = useTranslation("common")
   const { preference, setLocale } = useLocale()
 

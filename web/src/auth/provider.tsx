@@ -12,7 +12,7 @@ import {
 import {
   SessionContext,
   type SessionControllerContextValue,
-} from "@/auth/useSession"
+} from "@/auth/hooks/useSession.ts"
 
 /** Session React Provider 覆盖的子树属性。 */
 export interface SessionProviderProps {

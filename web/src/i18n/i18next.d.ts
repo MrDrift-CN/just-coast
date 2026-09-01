@@ -1,6 +1,7 @@
 import "i18next"
 
 import type auth from "@/i18n/resources/zh-CN/auth.json"
+import type chat from "@/i18n/resources/zh-CN/chat.json"
 import type common from "@/i18n/resources/zh-CN/common.json"
 import type { DEFAULT_NAMESPACE } from "@/i18n/config"
 
@@ -14,6 +15,9 @@ declare module "i18next" {
     resources: {
       /** 认证流程翻译资源。 */
       auth: typeof auth
+
+      /** 聊天功能翻译资源。 */
+      chat: typeof chat
 
       /** 跨功能通用翻译资源。 */
       common: typeof common

@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react"
 
-import type { SessionStatus } from "@/auth/session"
-import type { AuthenticationResult, AuthSession } from "@/auth/types"
+import type { SessionStatus } from "@/auth/session.ts"
+import type { AuthenticationResult, AuthSession } from "@/auth/types.ts"
 
 /** 页面与其他 React 消费者共享的安全认证状态和动作。 */
 export interface SessionContextValue {

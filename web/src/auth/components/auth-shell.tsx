@@ -11,7 +11,7 @@ import {
 
 import "@/auth/styles.css"
 
-/** 认证页面通用外壳的内容插槽。 */
+/** 认证页面共享外壳的内容插槽。 */
 export interface AuthShellProps {
   /** 页面外壳之外的辅助操作，例如语言切换。 */
   actions?: ReactNode
@@ -25,18 +25,18 @@ export interface AuthShellProps {
   /** 当前认证场景的表单内容。 */
   children: ReactNode
 
-  /** 表单下方的场景导航内容。 */
-  footer: ReactNode
+  /** 表单下方的场景导航内容；没有底部导航的页面可以省略。 */
+  footer?: ReactNode
 }
 
 /** 只提供认证页面布局和主题样式，不持有认证状态或流程。 */
-export function AuthShell({
+export const AuthShell = ({
   actions,
   title,
   description,
   children,
   footer,
-}: AuthShellProps) {
+}: AuthShellProps) => {
   return (
     <main className="auth-shell">
       <Card className="auth-card">
@@ -49,7 +49,9 @@ export function AuthShell({
 
         <CardContent>{children}</CardContent>
 
-        <CardFooter className="justify-center">{footer}</CardFooter>
+        {footer !== undefined && footer !== null ? (
+          <CardFooter className="justify-center">{footer}</CardFooter>
+        ) : null}
       </Card>
 
       {actions ? <div className="auth-actions">{actions}</div> : null}
